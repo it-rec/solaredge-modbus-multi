@@ -458,6 +458,9 @@ class ACCurrentSensor(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["AC_Current_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["AC_Current_SF"])
 
 
@@ -545,6 +548,9 @@ class VoltageSensor(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["AC_Voltage_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["AC_Voltage_SF"])
 
 
@@ -602,6 +608,7 @@ class ACPower(SolarEdgeSensorBase):
             if (
                 self._platform.decoded_model[model_key] == SunSpecNotImpl.INT16
                 or self._platform.decoded_model["AC_Power_SF"] == SunSpecNotImpl.INT16
+                or self._platform.decoded_model["AC_Power_SF"] not in SUNSPEC_SF_RANGE
             ):
                 return None
 
@@ -616,6 +623,9 @@ class ACPower(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["AC_Power_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["AC_Power_SF"])
 
 
@@ -690,6 +700,9 @@ class ACFrequency(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["AC_Frequency_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["AC_Frequency_SF"])
 
 
@@ -747,6 +760,9 @@ class ACVoltAmp(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["AC_VA_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["AC_VA_SF"])
 
 
@@ -804,6 +820,9 @@ class ACVoltAmpReactive(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["AC_var_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["AC_var_SF"])
 
 
@@ -861,6 +880,9 @@ class ACPowerFactor(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["AC_PF_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["AC_PF_SF"])
 
 
@@ -1072,6 +1094,12 @@ class SolarEdgeDCCurrentMMPPT(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self) -> int:
+        if (
+            self._platform.inverter.decoded_model["mmppt_DCA_SF"]
+            not in SUNSPEC_SF_RANGE
+        ):
+            return 1
+
         return abs(self._platform.inverter.decoded_model["mmppt_DCA_SF"])
 
 
@@ -1113,6 +1141,9 @@ class DCVoltage(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["I_DC_Voltage_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["I_DC_Voltage_SF"])
 
 
@@ -1156,6 +1187,12 @@ class SolarEdgeDCVoltageMMPPT(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self) -> int:
+        if (
+            self._platform.inverter.decoded_model["mmppt_DCV_SF"]
+            not in SUNSPEC_SF_RANGE
+        ):
+            return 1
+
         return abs(self._platform.inverter.decoded_model["mmppt_DCV_SF"])
 
 
@@ -1196,6 +1233,9 @@ class DCPower(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["I_DC_Power_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["I_DC_Power_SF"])
 
 
@@ -1238,6 +1278,12 @@ class SolarEdgeDCPowerMMPPT(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self) -> int:
+        if (
+            self._platform.inverter.decoded_model["mmppt_DCW_SF"]
+            not in SUNSPEC_SF_RANGE
+        ):
+            return 1
+
         return abs(self._platform.inverter.decoded_model["mmppt_DCW_SF"])
 
 
@@ -1279,6 +1325,9 @@ class HeatSinkTemperature(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["I_Temp_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["I_Temp_SF"])
 
 
@@ -1797,6 +1846,9 @@ class MeterVAhIE(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["M_VAh_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["M_VAh_SF"])
 
 
@@ -1875,6 +1927,9 @@ class MetervarhIE(SolarEdgeSensorBase):
 
     @property
     def suggested_display_precision(self):
+        if self._platform.decoded_model["M_varh_SF"] not in SUNSPEC_SF_RANGE:
+            return 1
+
         return abs(self._platform.decoded_model["M_varh_SF"])
 
 
