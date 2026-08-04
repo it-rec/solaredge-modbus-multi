@@ -338,6 +338,12 @@ BATTERY_STATUS = {
     10: "B_STATUS_POWER_SAVING",
 }
 
+# SolarEdge does not publish the battery vendor status codes, unlike the
+# inverter codes in VENDOR_STATUS. Entries are only added here once a value has
+# been confirmed against a real battery; anything else is reported as
+# undocumented rather than guessed at.
+BATTERY_VENDOR_STATUS: dict[int, str] = {}
+
 BATTERY_STATUS_TEXT = {
     0: "Off",
     1: "Standby",
