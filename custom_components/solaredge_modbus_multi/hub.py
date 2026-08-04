@@ -202,6 +202,7 @@ class SolarEdgeModbusMultiHub:
 
         self._client = None
         self._connect_lock = asyncio.Lock()
+        self._use_device_id_kwarg = None
 
         self._pymodbus_version = pymodbus_version
 
@@ -556,14 +557,19 @@ class SolarEdgeModbusMultiHub:
         self._rr_address = address
         self._rr_count = rcount
 
-        sig = inspect.signature(self._client.read_holding_registers)
+        # pymodbus renamed the "slave" keyword to "device_id"; detect
+        # the API once instead of using reflection on every call.
+        if self._use_device_id_kwarg is None:
+            sig = inspect.signature(self._client.read_holding_registers)
+            self._use_device_id_kwarg = "device_id" in sig.parameters
+            _LOGGER.debug(f"use_device_id_kwarg={self._use_device_id_kwarg}")
 
         _LOGGER.debug(
             f"unit={self._rr_unit}: modbus_read_holding_registers "
             f"address={self._rr_address} count={self._rr_count}"
         )
 
-        if "device_id" in sig.parameters:
+        if self._use_device_id_kwarg:
             result = await self._client.read_holding_registers(
                 address=self._rr_address, count=self._rr_count, device_id=self._rr_unit
             )
@@ -623,9 +629,12 @@ class SolarEdgeModbusMultiHub:
         try:
             await self.connect()
 
-            sig = inspect.signature(self._client.write_registers)
+            if self._use_device_id_kwarg is None:
+                sig = inspect.signature(self._client.write_registers)
+                self._use_device_id_kwarg = "device_id" in sig.parameters
+                _LOGGER.debug(f"use_device_id_kwarg={self._use_device_id_kwarg}")
 
-            if "device_id" in sig.parameters:
+            if self._use_device_id_kwarg:
                 result = await self._client.write_registers(
                     address=self._wr_address,
                     values=self._wr_payload,
