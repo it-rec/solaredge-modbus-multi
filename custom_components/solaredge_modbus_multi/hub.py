@@ -4,6 +4,7 @@ import asyncio
 import importlib.metadata
 import inspect
 import logging
+import math
 
 from awesomeversion import AwesomeVersion
 from awesomeversion.exceptions import (
@@ -2463,8 +2464,7 @@ class SolarEdgeBattery:
         ].translate(ascii_ctrl_chars)
 
         if (
-            float_to_hex(self.decoded_common["B_RatedEnergy"])
-            == hex(SunSpecNotImpl.FLOAT32)
+            math.isnan(self.decoded_common["B_RatedEnergy"])
             or self.decoded_common["B_RatedEnergy"] <= 0
         ):
             raise DeviceInvalid(f"Battery {self.battery_id} not usable (rating <=0)")
