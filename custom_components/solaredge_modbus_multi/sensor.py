@@ -945,7 +945,8 @@ class SolarEdgeACEnergy(SolarEdgeSensorBase):
         try:
             if (
                 self._platform.decoded_model[self._model_key] == SunSpecAccum.NA32
-                or self._platform.decoded_model[self._model_key] > SunSpecAccum.LIMIT32
+                or self._platform.decoded_model[self._model_key]
+                >= SunSpecAccum.LIMIT32
                 or self._platform.decoded_model["AC_Energy_WH_SF"]
                 not in SUNSPEC_SF_RANGE
             ):
@@ -1723,7 +1724,7 @@ class SolarEdgeMMPPTEvents(SolarEdgeSensorBase):
 
 
 class MeterVAhIE(SolarEdgeSensorBase):
-    device_class = SensorDeviceClass.ENERGY
+    # No device_class: ENERGY only allows Wh-based units, not VAh.
     state_class = SensorStateClass.TOTAL_INCREASING
     native_unit_of_measurement = ENERGY_VOLT_AMPERE_HOUR
 
@@ -1775,7 +1776,7 @@ class MeterVAhIE(SolarEdgeSensorBase):
         try:
             if (
                 self._platform.decoded_model[model_key] == SunSpecAccum.NA32
-                or self._platform.decoded_model[model_key] > SunSpecAccum.LIMIT32
+                or self._platform.decoded_model[model_key] >= SunSpecAccum.LIMIT32
                 or self._platform.decoded_model["M_VAh_SF"] == SunSpecNotImpl.INT16
                 or self._platform.decoded_model["M_VAh_SF"] not in SUNSPEC_SF_RANGE
             ):
@@ -1788,8 +1789,8 @@ class MeterVAhIE(SolarEdgeSensorBase):
                 )
 
                 try:
-                    return update_accum(self, value, value)
-                except Exception:
+                    return update_accum(self, value)
+                except ValueError:
                     return None
 
         except TypeError:
@@ -1801,7 +1802,7 @@ class MeterVAhIE(SolarEdgeSensorBase):
 
 
 class MetervarhIE(SolarEdgeSensorBase):
-    device_class = SensorDeviceClass.ENERGY
+    # No device_class: ENERGY only allows Wh-based units, not varh.
     state_class = SensorStateClass.TOTAL_INCREASING
     native_unit_of_measurement = ENERGY_VOLT_AMPERE_REACTIVE_HOUR
 
@@ -1853,7 +1854,7 @@ class MetervarhIE(SolarEdgeSensorBase):
         try:
             if (
                 self._platform.decoded_model[model_key] == SunSpecAccum.NA32
-                or self._platform.decoded_model[model_key] > SunSpecAccum.LIMIT32
+                or self._platform.decoded_model[model_key] >= SunSpecAccum.LIMIT32
                 or self._platform.decoded_model["M_varh_SF"] == SunSpecNotImpl.INT16
                 or self._platform.decoded_model["M_varh_SF"] not in SUNSPEC_SF_RANGE
             ):
@@ -1866,8 +1867,8 @@ class MetervarhIE(SolarEdgeSensorBase):
                 )
 
                 try:
-                    return update_accum(self, value, value)
-                except Exception:
+                    return update_accum(self, value)
+                except ValueError:
                     return None
 
         except TypeError:
