@@ -151,11 +151,15 @@ class StorageACChargeLimit(SolarEdgeNumberBase):
     @property
     def native_unit_of_measurement(self) -> str | None:
         # kWh in AC policy "Fixed Energy Limit", % in AC policy "Percent of Production"
-        if self._platform.decoded_storage_control["ac_charge_policy"] == 2:
-            return UnitOfEnergy.KILO_WATT_HOUR
-        elif self._platform.decoded_storage_control["ac_charge_policy"] == 3:
-            return PERCENTAGE
-        else:
+        try:
+            if self._platform.decoded_storage_control["ac_charge_policy"] == 2:
+                return UnitOfEnergy.KILO_WATT_HOUR
+            elif self._platform.decoded_storage_control["ac_charge_policy"] == 3:
+                return PERCENTAGE
+            else:
+                return None
+
+        except (TypeError, KeyError):
             return None
 
     @property
@@ -165,16 +169,24 @@ class StorageACChargeLimit(SolarEdgeNumberBase):
     @property
     def native_max_value(self) -> int:
         # 100MWh in AC policy "Fixed Energy Limit"
-        if self._platform.decoded_storage_control["ac_charge_policy"] == 2:
-            return 100000000
-        elif self._platform.decoded_storage_control["ac_charge_policy"] == 3:
-            return 100
-        else:
+        try:
+            if self._platform.decoded_storage_control["ac_charge_policy"] == 2:
+                return 100000000
+            elif self._platform.decoded_storage_control["ac_charge_policy"] == 3:
+                return 100
+            else:
+                return 0
+
+        except (TypeError, KeyError):
             return 0
 
     @property
-    def native_value(self) -> int:
-        return int(self._platform.decoded_storage_control["ac_charge_limit"])
+    def native_value(self) -> int | None:
+        try:
+            return int(self._platform.decoded_storage_control["ac_charge_limit"])
+
+        except (TypeError, KeyError):
+            return None
 
     async def async_set_native_value(self, value: float) -> None:
         _LOGGER.debug(f"set {self.unique_id} to {value}")
