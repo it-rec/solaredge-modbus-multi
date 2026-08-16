@@ -182,8 +182,14 @@ class SolarEdgeDeviceScanner:
     async def disconnect(self) -> None:
         """Close the TCP connection to the Modbus device."""
         if self._writer is not None:
-            self._writer.close()
-            await self._writer.wait_closed()
+            try:
+                self._writer.close()
+                await self._writer.wait_closed()
+            except OSError:
+                # wait_closed() re-raises a pending connection error
+                # (e.g. ConnectionResetError); the transport is gone
+                # either way, so just drop the references.
+                pass
         self._writer = None
         self._reader = None
 
@@ -209,15 +215,30 @@ class SolarEdgeDeviceScanner:
         expected[self.TRANS_LOW_INDEX] = request[1]
         expected[self.DEVICE_ID_INDEX] = request[self.DEVICE_ID_INDEX]
 
-        index = 0
-        for a in response:
-            if index >= len(expected):
-                return self.FOUND if index >= 7 else 0
-            if a != expected[index]:
-                return self.NOT_FOUND
-            index = index + 1
+        # A response to a different transaction ID is stale data left in
+        # the stream from an earlier (timed out) request, not a device
+        # answering this scan.
+        if (
+            response[self.TRANS_HIGH_INDEX] != expected[self.TRANS_HIGH_INDEX]
+            or response[self.TRANS_LOW_INDEX] != expected[self.TRANS_LOW_INDEX]
+        ):
+            return self.NOT_FOUND
 
-        return self.FOUND_INV
+        # An inverter must match the full signature; trailing extra bytes
+        # (e.g. a coalesced late reply) do not disqualify the match.
+        if len(response) >= len(expected):
+            if list(response[: len(expected)]) == expected:
+                return self.FOUND_INV
+
+            return self.FOUND
+
+        # Shorter than the signature but matching so far: likely a
+        # truncated inverter frame split across TCP segments. Treat it
+        # as indeterminate (retry) rather than "other device".
+        if list(response) == expected[: len(response)]:
+            return self.NOT_FOUND
+
+        return self.FOUND
 
     async def scan_device_id(self, device_id: int, timeout: float = 5.0) -> int:
         """Scan a specific Modbus device ID for a SolarEdge inverter.
@@ -257,20 +278,34 @@ class SolarEdgeDeviceScanner:
 
                 async with asyncio.timeout(timeout):
                     response = await self._reader.read(1024)
-                    result = self.device_is_inverter(request, response)
-                    if result == self.FOUND_INV:
-                        _LOGGER.debug(f" {device_id} is INVERTER")
-                        return self.FOUND_INV
-                    else:
-                        _LOGGER.warning(
-                            f"Scanned device {device_id} did not match signature: "
-                            f"{' '.join(format(x, '02x') for x in response)}"
-                        )
 
-                    _LOGGER.debug(f" Received ({len(response)} bytes)")
-                    _LOGGER.debug(f" {' '.join(format(x, '02x') for x in response)}")
+                if not response:
+                    # Connection closed by the remote host
+                    _LOGGER.debug(" Connection closed by remote host")
+                    attempt += 1
+                    await self.disconnect()
+                    await self.connect()
+                    continue
 
+                _LOGGER.debug(f" Received ({len(response)} bytes)")
+                _LOGGER.debug(f" {' '.join(format(x, '02x') for x in response)}")
+
+                result = self.device_is_inverter(request, response)
+
+                if result == self.FOUND_INV:
+                    _LOGGER.debug(f" {device_id} is INVERTER")
+                    return self.FOUND_INV
+
+                if result == self.FOUND:
+                    _LOGGER.debug(
+                        f"Device ID {device_id} responded but "
+                        "did not match the inverter signature"
+                    )
                     return self.FOUND
+
+                # Stale or invalid response: retry this device ID
+                _LOGGER.debug(f" Invalid or stale response at ID {device_id}")
+                attempt += 1
 
             except asyncio.TimeoutError:
                 _LOGGER.debug(f" Timed out after {timeout}s")
@@ -279,6 +314,8 @@ class SolarEdgeDeviceScanner:
             except OSError as e:
                 _LOGGER.debug(f" FAILED: {e}")
                 attempt += 1
+                await self.disconnect()
+                await self.connect()
 
         _LOGGER.debug(f" No device found at ID {device_id}")
         return self.NOT_FOUND
