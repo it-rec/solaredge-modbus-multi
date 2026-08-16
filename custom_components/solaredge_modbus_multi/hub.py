@@ -2301,8 +2301,8 @@ class SolarEdgeMeter:
             ]
             uint32_data = (
                 meter_data.registers[38:54]
-                + meter_data.registers[55:70]
-                + meter_data.registers[71:104]
+                + meter_data.registers[55:71]
+                + meter_data.registers[72:104]
                 + meter_data.registers[105:107]
             )
             self.decoded_model.update(
