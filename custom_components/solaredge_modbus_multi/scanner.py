@@ -182,8 +182,14 @@ class SolarEdgeDeviceScanner:
     async def disconnect(self) -> None:
         """Close the TCP connection to the Modbus device."""
         if self._writer is not None:
-            self._writer.close()
-            await self._writer.wait_closed()
+            try:
+                self._writer.close()
+                await self._writer.wait_closed()
+            except OSError:
+                # wait_closed() re-raises a pending connection error
+                # (e.g. ConnectionResetError); the transport is gone
+                # either way, so just drop the references.
+                pass
         self._writer = None
         self._reader = None
 
@@ -223,6 +229,14 @@ class SolarEdgeDeviceScanner:
         if len(response) >= len(expected):
             if list(response[: len(expected)]) == expected:
                 return self.FOUND_INV
+
+            return self.FOUND
+
+        # Shorter than the signature but matching so far: likely a
+        # truncated inverter frame split across TCP segments. Treat it
+        # as indeterminate (retry) rather than "other device".
+        if list(response) == expected[: len(response)]:
+            return self.NOT_FOUND
 
         return self.FOUND
 
