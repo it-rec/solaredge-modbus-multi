@@ -30,6 +30,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     BATTERY_STATUS,
+    BATTERY_VENDOR_STATUS,
     BATTERY_STATUS_TEXT,
     DEVICE_STATUS,
     DEVICE_STATUS_TEXT,
@@ -241,6 +242,9 @@ async def async_setup_entry(
         entities.append(SolarEdgeBatterySOH(battery, config_entry, coordinator))
         entities.append(SolarEdgeBatterySOE(battery, config_entry, coordinator))
         entities.append(SolarEdgeBatteryStatus(battery, config_entry, coordinator))
+        entities.append(
+            SolarEdgeBatteryStatusVendor(battery, config_entry, coordinator)
+        )
 
     for evse in hub.evses:
         entities.append(Version(evse, config_entry, coordinator))
@@ -1395,6 +1399,59 @@ class SolarEdgeBatteryStatus(SolarEdgeStatusSensor):
             pass
 
         return attrs
+
+
+class SolarEdgeBatteryStatusVendor(SolarEdgeSensorBase):
+    """Vendor status code of a SolarEdge battery."""
+
+    entity_category = EntityCategory.DIAGNOSTIC
+    entity_registry_enabled_default = False
+
+    @property
+    def unique_id(self) -> str:
+        return f"{self._platform.uid_base}_status_vendor"
+
+    @property
+    def name(self) -> str:
+        return "Status Vendor"
+
+    @property
+    def native_value(self):
+        try:
+            if (
+                self._platform.decoded_model["B_Status_Vendor"]
+                == SunSpecNotImpl.UINT32
+            ):
+                return None
+
+            return str(self._platform.decoded_model["B_Status_Vendor"])
+
+        except (TypeError, KeyError):
+            return None
+
+    @property
+    def extra_state_attributes(self):
+        """Give the raw code a human readable description where one is known.
+
+        Mirrors how the inverter reports its vendor status. SolarEdge does not
+        publish the battery codes, so BATTERY_VENDOR_STATUS starts out empty and
+        anything not in it is reported as undocumented rather than guessed at.
+        """
+        try:
+            value = self._platform.decoded_model["B_Status_Vendor"]
+
+            if value == SunSpecNotImpl.UINT32:
+                return None
+
+            return {
+                "status_value": value,
+                "description": BATTERY_VENDOR_STATUS.get(
+                    value, "undocumented vendor code"
+                ),
+            }
+
+        except (TypeError, KeyError):
+            return None
 
 
 class StatusVendor(SolarEdgeSensorBase):
