@@ -1670,7 +1670,7 @@ class SolarEdgeInverter:
                                 uint32_fields,
                                 ModbusClientMixin.convert_from_registers(
                                     uint32_data,
-                                    data_type=ModbusClientMixin.DATATYPE.FLOAT32,
+                                    data_type=ModbusClientMixin.DATATYPE.UINT32,
                                     word_order="little",
                                 ),
                                 strict=True,
