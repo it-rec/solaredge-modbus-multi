@@ -30,6 +30,22 @@ discovery and may not be supported by SolarEdge.
 
 Read about more features on the wiki: [WillCodeForCats/solaredge-modbus-multi/wiki](https://github.com/WillCodeForCats/solaredge-modbus-multi/wiki)
 
+### Diagnostic entities
+
+These entities are registered but **disabled by default**, because most systems either
+do not implement the underlying register or will only ever show one value. Enable them
+in the entity settings if you need them.
+
+| Entity | What it shows | What to expect |
+|---|---|---|
+| **Temperature Cabinet / Transformer / Other** (inverter) | The remaining three SunSpec temperature registers next to the heat sink temperature. | Most inverters implement only the heat sink value. If a register is not implemented the entity stays *unknown* rather than showing a bogus temperature. |
+| **Status Vendor** (battery) | The battery's vendor-specific status code, as a number. | SolarEdge does not publish the battery codes, so the `description` attribute reads *undocumented vendor code* unless the value is a known one. It is not the same thing as **Status**, and it does not follow it. |
+| **Event Log** / **Event Log Vendor** (battery) | The battery's eight standard and eight vendor event registers, which are bitfields. | `none` while the battery reports no event. Otherwise the registers that are set, e.g. `log3=0x0004`. The full 128 bit field is in the `bitfield` attribute, the individual registers and an `events_present` flag alongside it. |
+
+For the battery, **Status** is the value to build automations on: it is the documented
+SunSpec status (charging, discharging, preserve charge, fault, …). The vendor status and
+the event log are there for diagnosis when something is wrong.
+
 ## Installation
 
 Install with [HACS](https://hacs.xyz): Search for "SolarEdge Modbus Multi" in the default repository,
