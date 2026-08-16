@@ -329,7 +329,7 @@ class SolaredgeLimitControlMode(SolarEdgeSelectBase):
     def available(self) -> bool:
         try:
             if self._platform.decoded_model["E_Lim_Ctl_Mode"] == SunSpecNotImpl.UINT16:
-                return None
+                return False
 
             return super().available
 
@@ -390,7 +390,10 @@ class SolaredgeLimitControl(SolarEdgeSelectBase):
     @property
     def available(self) -> bool:
         try:
-            if self._platform.decoded_model["E_Lim_Ctl"] == SunSpecNotImpl.UINT16:
+            if (
+                self._platform.decoded_model["E_Lim_Ctl"] == SunSpecNotImpl.UINT16
+                or self._platform.decoded_model["E_Lim_Ctl"] not in self._options
+            ):
                 return False
 
             return super().available
