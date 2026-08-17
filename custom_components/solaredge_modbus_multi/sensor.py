@@ -19,6 +19,7 @@ from homeassistant.const import (
     UnitOfEnergy,
     UnitOfFrequency,
     UnitOfPower,
+    UnitOfReactiveEnergy,
     UnitOfReactivePower,
     UnitOfTemperature,
 )
@@ -35,7 +36,6 @@ from .const import (
     DEVICE_STATUS_TEXT,
     DOMAIN,
     ENERGY_VOLT_AMPERE_HOUR,
-    ENERGY_VOLT_AMPERE_REACTIVE_HOUR,
     INVERTED_POWER_VERSION,
     METER_EVENTS,
     MMPPT_EVENTS,
@@ -945,7 +945,8 @@ class SolarEdgeACEnergy(SolarEdgeSensorBase):
         try:
             if (
                 self._platform.decoded_model[self._model_key] == SunSpecAccum.NA32
-                or self._platform.decoded_model[self._model_key] > SunSpecAccum.LIMIT32
+                or self._platform.decoded_model[self._model_key]
+                >= SunSpecAccum.LIMIT32
                 or self._platform.decoded_model["AC_Energy_WH_SF"]
                 not in SUNSPEC_SF_RANGE
             ):
@@ -1775,7 +1776,7 @@ class MeterVAhIE(SolarEdgeSensorBase):
         try:
             if (
                 self._platform.decoded_model[model_key] == SunSpecAccum.NA32
-                or self._platform.decoded_model[model_key] > SunSpecAccum.LIMIT32
+                or self._platform.decoded_model[model_key] >= SunSpecAccum.LIMIT32
                 or self._platform.decoded_model["M_VAh_SF"] == SunSpecNotImpl.INT16
                 or self._platform.decoded_model["M_VAh_SF"] not in SUNSPEC_SF_RANGE
             ):
@@ -1801,9 +1802,9 @@ class MeterVAhIE(SolarEdgeSensorBase):
 
 
 class MetervarhIE(SolarEdgeSensorBase):
-    device_class = SensorDeviceClass.ENERGY
+    device_class = SensorDeviceClass.REACTIVE_ENERGY
     state_class = SensorStateClass.TOTAL_INCREASING
-    native_unit_of_measurement = ENERGY_VOLT_AMPERE_REACTIVE_HOUR
+    native_unit_of_measurement = UnitOfReactiveEnergy.VOLT_AMPERE_REACTIVE_HOUR
 
     def __init__(self, platform, config_entry, coordinator, phase: str = None):
         super().__init__(platform, config_entry, coordinator)
@@ -1853,7 +1854,7 @@ class MetervarhIE(SolarEdgeSensorBase):
         try:
             if (
                 self._platform.decoded_model[model_key] == SunSpecAccum.NA32
-                or self._platform.decoded_model[model_key] > SunSpecAccum.LIMIT32
+                or self._platform.decoded_model[model_key] >= SunSpecAccum.LIMIT32
                 or self._platform.decoded_model["M_varh_SF"] == SunSpecNotImpl.INT16
                 or self._platform.decoded_model["M_varh_SF"] not in SUNSPEC_SF_RANGE
             ):
