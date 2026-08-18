@@ -215,15 +215,17 @@ SUNSPEC_SF_RANGE = [
 ]
 
 # parameter names per sunspec
+# lowercase: these are the entity state translation keys, which Home
+# Assistant requires to match [a-z0-9-_]+
 DEVICE_STATUS = {
-    1: "I_STATUS_OFF",
-    2: "I_STATUS_SLEEPING",
-    3: "I_STATUS_STARTING",
-    4: "I_STATUS_MPPT",
-    5: "I_STATUS_THROTTLED",
-    6: "I_STATUS_SHUTTING_DOWN",
-    7: "I_STATUS_FAULT",
-    8: "I_STATUS_STANDBY",
+    1: "i_status_off",
+    2: "i_status_sleeping",
+    3: "i_status_starting",
+    4: "i_status_mppt",
+    5: "i_status_throttled",
+    6: "i_status_shutting_down",
+    7: "i_status_fault",
+    8: "i_status_standby",
 }
 
 # English descriptions of parameter names
@@ -326,16 +328,18 @@ METER_EVENTS = {
     30: "OEM15",
 }
 
+# lowercase: these are the entity state translation keys, which Home
+# Assistant requires to match [a-z0-9-_]+
 BATTERY_STATUS = {
-    0: "B_STATUS_OFF",
-    1: "B_STATUS_STANDBY",
-    2: "B_STATUS_INIT",
-    3: "B_STATUS_CHARGE",
-    4: "B_STATUS_DISCHARGE",
-    5: "B_STATUS_FAULT",
-    6: "B_STATUS_PRESERVE_CHARGE",
-    7: "B_STATUS_IDLE",
-    10: "B_STATUS_POWER_SAVING",
+    0: "b_status_off",
+    1: "b_status_standby",
+    2: "b_status_init",
+    3: "b_status_charge",
+    4: "b_status_discharge",
+    5: "b_status_fault",
+    6: "b_status_preserve_charge",
+    7: "b_status_idle",
+    10: "b_status_power_saving",
 }
 
 BATTERY_STATUS_TEXT = {
