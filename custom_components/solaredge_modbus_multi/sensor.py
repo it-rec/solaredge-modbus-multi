@@ -241,6 +241,10 @@ async def async_setup_entry(
         entities.append(SolarEdgeBatterySOH(battery, config_entry, coordinator))
         entities.append(SolarEdgeBatterySOE(battery, config_entry, coordinator))
         entities.append(SolarEdgeBatteryStatus(battery, config_entry, coordinator))
+        entities.append(SolarEdgeBatteryEventLog(battery, config_entry, coordinator))
+        entities.append(
+            SolarEdgeBatteryEventLog(battery, config_entry, coordinator, vendor=True)
+        )
 
     for evse in hub.evses:
         entities.append(Version(evse, config_entry, coordinator))
@@ -1392,6 +1396,111 @@ class SolarEdgeBatteryStatus(SolarEdgeStatusSensor):
             attrs["status_value"] = self._platform.decoded_model["B_Status"]
 
         except KeyError:
+            pass
+
+        return attrs
+
+
+class SolarEdgeBatteryEventLog(SolarEdgeSensorBase):
+    """Combined battery event log bitfield.
+
+    The battery model carries eight uint16 event registers and eight vendor
+    event registers that are read on every poll but were not exposed. They are
+    bitfields: zero means no event, any set bit is a fault or warning reported
+    by the battery. One entity covers all eight registers: the state is "none"
+    while nothing is set and names only the registers that are, so it stays
+    readable in the UI. The individual registers and the combined bitfield are
+    kept as attributes for diagnosis.
+    """
+
+    entity_category = EntityCategory.DIAGNOSTIC
+    entity_registry_enabled_default = False
+
+    def __init__(self, platform, config_entry, coordinator, vendor: bool = False):
+        super().__init__(platform, config_entry, coordinator)
+
+        self._vendor = vendor
+        self._prefix = "B_Event_Log_Vendor" if vendor else "B_Event_Log"
+        self._keys = [f"{self._prefix}{i}" for i in range(1, 9)]
+
+    @property
+    def unique_id(self) -> str:
+        suffix = "event_log_vendor" if self._vendor else "event_log"
+        return f"{self._platform.uid_base}_{suffix}"
+
+    @property
+    def name(self) -> str:
+        return "Event Log Vendor" if self._vendor else "Event Log"
+
+    def _registers(self) -> list[int] | None:
+        """Return the eight registers, or None if none of them are usable."""
+        values = []
+
+        for key in self._keys:
+            value = self._platform.decoded_model[key]
+
+            if not isinstance(value, int) or value == SunSpecNotImpl.UINT16:
+                continue
+
+            values.append((key, value))
+
+        return values or None
+
+    def _combined(self, values) -> int:
+        """Combine the registers into one bitfield, most significant first."""
+        combined = 0
+
+        for index, key in enumerate(self._keys):
+            for entry_key, value in values:
+                if entry_key == key:
+                    combined |= (value & 0xFFFF) << (
+                        16 * (len(self._keys) - 1 - index)
+                    )
+
+        return combined
+
+    @property
+    def native_value(self):
+        try:
+            values = self._registers()
+
+            if values is None:
+                return None
+
+            # Keep the state short so it stays readable in the UI: the normal
+            # case is a single word, and a fault names only the registers that
+            # are actually set. The full bitfield is in the attributes.
+            active = [
+                f"{key.replace(self._prefix, 'log')}=0x{value:04x}"
+                for key, value in values
+                if value
+            ]
+
+            if not active:
+                return "none"
+
+            return ", ".join(active)
+
+        except (TypeError, KeyError):
+            return None
+
+    @property
+    def extra_state_attributes(self):
+        attrs = {}
+
+        try:
+            values = self._registers()
+
+            if values is None:
+                return attrs
+
+            for key, value in values:
+                attrs[key.lower()] = f"0x{value:04x}"
+
+            attrs["bitfield"] = f"0x{self._combined(values):032x}"
+            attrs["events_present"] = any(value for _, value in values)
+
+        except (TypeError, KeyError):
             pass
 
         return attrs
