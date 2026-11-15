@@ -14,13 +14,31 @@
           "manual_list": "Voer handmatig een lijst van omvormer-apparaat-ID's in"
         }
       },
+      "zeroconf_confirm": {
+        "title": "Ontdekte SolarEdge-omvormer",
+        "description": "Er is een SolarEdge Modbus/TCP-gateway gevonden op {host}:{port}. Nu instellen?",
+        "data": {
+          "name": "Sensor prefix"
+        },
+        "data_description": {
+          "name": "Wordt aan het begin van elke apparaatnaam gezet, gevolgd door het apparaat, bijvoorbeeld I1 voor omvormer 1. Entiteit-ID's worden uit deze namen gemaakt."
+        }
+      },
       "manual": {
         "title": "Handmatige Modbus-configuratie",
         "data": {
           "name": "Sensor prefix",
           "host": "omvormer IP-adres",
           "port": "Modbus/TCP Port",
-          "device_list": "Omvormerapparaat-ID-lijst"
+          "device_list": "Omvormerapparaat-ID-lijst",
+          "bypass_device_check": "ID-controle overslaan"
+        },
+        "data_description": {
+          "name": "Wordt aan het begin van elke apparaatnaam gezet, gevolgd door het apparaat, bijvoorbeeld I1 voor omvormer 1. Entiteit-ID's worden uit deze namen gemaakt.",
+          "host": "IP-adres of hostnaam van de omvormer met Modbus/TCP ingeschakeld. Gebruik bij meerdere omvormers de leader-omvormer.",
+          "port": "Modbus/TCP-poort die op de omvormer is ingesteld. De standaard van SolarEdge is 1502.",
+          "device_list": "Modbus-apparaat-ID's van je omvormers. Gebruik een lijst (1,3,10), een bereik (1-4) of beide (1-3,5,10). Eén omvormer gebruikt normaal 1.",
+          "bypass_device_check": "Voeg de apparaat-ID-lijst toe zonder verbinding te maken om te controleren of elke ID reageert als een SolarEdge-omvormer. Gebruik dit alleen als de controle mislukt voor een apparaat waarvan u weet dat het correct is, bijvoorbeeld een apparaat dat offline is tijdens de installatie."
         }
       },
       "scan_ask_host": {
@@ -29,6 +47,11 @@
           "name": "Sensor prefix",
           "host": "omvormer IP-adres",
           "port": "Modbus/TCP Port"
+        },
+        "data_description": {
+          "name": "Wordt aan het begin van elke apparaatnaam gezet, gevolgd door het apparaat, bijvoorbeeld I1 voor omvormer 1. Entiteit-ID's worden uit deze namen gemaakt.",
+          "host": "IP-adres of hostnaam van de omvormer met Modbus/TCP ingeschakeld. Gebruik bij meerdere omvormers de leader-omvormer.",
+          "port": "Modbus/TCP-poort die op de omvormer is ingesteld. De standaard van SolarEdge is 1502."
         }
       },
       "scan_complete": {
@@ -44,6 +67,11 @@
           "host": "omvormer IP-adres",
           "port": "Modbus/TCP Port",
           "device_list": "Omvormerapparaat-ID-lijst"
+        },
+        "data_description": {
+          "host": "IP-adres of hostnaam van de omvormer met Modbus/TCP ingeschakeld. Gebruik bij meerdere omvormers de leader-omvormer.",
+          "port": "Modbus/TCP-poort die op de omvormer is ingesteld. De standaard van SolarEdge is 1502.",
+          "device_list": "Modbus-apparaat-ID's van je omvormers. Gebruik een lijst (1,3,10), een bereik (1-4) of beide (1-3,5,10). Eén omvormer gebruikt normaal 1."
         }
       }
     },
@@ -60,6 +88,7 @@
     },
     "abort": {
       "already_configured": "Host en poort zijn al geconfigureerd in een andere hub.",
+      "cannot_connect": "Kan geen verbinding maken met het gevonden apparaat.",
       "reconfigure_successful": "De herconfiguratie was succesvol"
     },
     "progress": {
@@ -72,12 +101,23 @@
         "title": "SolarEdge Modbus Instellingen",
         "data": {
           "scan_interval": "Oproepfrequentie (seconden)",
-          "keep_modbus_open": "Houd Modbus-verbinding open",
+          "close_after_polling": "Verbinding sluiten na oproep",
           "detect_meters": "Meters automatisch detecteren",
           "detect_batteries": "Batterijen automatisch detecteren",
           "detect_extras": "Automatische detectie van aanvullende entiteiten",
           "advanced_power_control": "Opties voor vermogensregeling",
+          "request_timeout": "Time-out voor Modbus-aanvraag (seconden)",
           "sleep_after_write": "Omvormer commando vertraging (seconden)"
+        },
+        "data_description": {
+          "scan_interval": "Hoe vaak, in seconden, gegevens van de omvormers worden gelezen.",
+          "close_after_polling": "Sluit de Modbus/TCP-verbinding na elke geslaagde polling. Schakel dit in als iets anders ook met de omvormer verbindt, omdat deze maar één verbinding tegelijk accepteert.",
+          "detect_meters": "Zoek naar meters die op elke omvormer zijn aangesloten wanneer de integratie start.",
+          "detect_batteries": "Zoek naar batterijen die op elke omvormer zijn aangesloten wanneer de integratie start. Batterijondersteuning gebruikt registers die SolarEdge niet officieel documenteert.",
+          "detect_extras": "Controleer of elke omvormer Global Dynamic Power Control en Advanced Power Control ondersteunt, en voeg hun entiteiten toe als ze worden gevonden.",
+          "advanced_power_control": "Toon hierna de stap Opties voor vermogensregeling om opslagregeling en regeling van de locatielimiet in of uit te schakelen.",
+          "request_timeout": "Hoe lang, in seconden, op een antwoord op elk Modbus-verzoek wordt gewacht.",
+          "sleep_after_write": "Seconden wachttijd tussen verzoeken aan een omvormer nadat er een opdracht naar is geschreven. Sommige omvormers hebben tijd nodig om een opdracht te verwerken voordat ze weer antwoorden. 0 schakelt dit uit."
         }
       },
       "adv_pwr_ctl": {
@@ -85,6 +125,10 @@
         "data": {
           "adv_storage_control": "Opslagbeheer inschakelen",
           "adv_site_limit_control": "Beheer van sitelimiet inschakelen"
+        },
+        "data_description": {
+          "adv_storage_control": "Voeg entiteiten toe die de instellingen voor batterijopslagregeling op de omvormer wijzigen.",
+          "adv_site_limit_control": "Voeg entiteiten toe die de export- en productielimieten van de locatie op de omvormer wijzigen."
         },
         "description": "Waarschuwing: deze opties kunnen in strijd zijn met nutsvoorzieningen, de facturering van uw nutsbedrijf wijzigen, mogelijk speciale apparatuur vereisen en de voorzieningen door SolarEdge of uw installateur overschrijven. Gebruik op eigen risico! Instelbare parameters in Modbus-registers zijn bedoeld voor langdurige opslag. Periodieke wijzigingen kunnen het flashgeheugen beschadigen."
       },
@@ -94,11 +138,17 @@
           "allow_battery_energy_reset": "Batterij-energie laten resetten",
           "battery_energy_reset_cycles": "Update cycli om de batterij-energie te resetten",
           "battery_rating_adjust": "Aanpassing batterijvermogen (%)"
+        },
+        "data_description": {
+          "allow_battery_energy_reset": "Sommige batterijen melden energietotalen die dalen of naar nul worden gezet. Indien uit, wordt een lagere waarde genegeerd en blijft de laatste waarde staan. Indien aan, wordt de lagere waarde geaccepteerd.",
+          "battery_energy_reset_cycles": "Aantal opeenvolgende pollings waarin een lagere batterij-energiewaarde gezien moet worden voordat deze wordt geaccepteerd. Alleen gebruikt als Batterij-energie mag resetten aan staat.",
+          "battery_rating_adjust": "Percentage boven de nominale energie van de batterij dat de beschikbare energie mag bereiken voordat de waarde als ongeldig wordt beschouwd. Gebruik dit als je batterij meer meldt dan de nominale waarde."
         }
       }
     },
     "error": {
       "invalid_scan_interval": "Geldig interval is 1 tot 86400 seconden.",
+      "invalid_request_timeout": "Geldig interval is 1 tot 60 seconden.",
       "invalid_sleep_interval": "Geldig interval is 0 tot 60 seconden.",
       "invalid_percent": "Het geldige bereik is 0 tot 100 procent."
     }
@@ -114,8 +164,12 @@
             "data": {
               "host": "omvormer IP-adres",
               "port": "Modbus/TCP Port",
-              "device_id": "Omvormer Modbus-adres (apparaat-ID)",
-              "number_of_inverters": "Aantal aangesloten omvormers"
+              "device_list": "Omvormerapparaat-ID-lijst"
+            },
+            "data_description": {
+              "host": "IP-adres of hostnaam van de omvormer met Modbus/TCP ingeschakeld. Gebruik bij meerdere omvormers de leader-omvormer.",
+              "port": "Modbus/TCP-poort die op de omvormer is ingesteld. De standaard van SolarEdge is 1502.",
+              "device_list": "Modbus-apparaat-ID's van je omvormers. Gebruik een lijst (1,3,10), een bereik (1-4) of beide (1-3,5,10). Eén omvormer gebruikt normaal 1."
             }
           }
         },
@@ -135,13 +189,68 @@
       "title": "Ongeldige omvormer-apparaat-ID",
       "description": "Omvormer-apparaat-ID {device_id} op {host} reageert niet of is geen geldige SolarEdge-omvormer. Deze is overgeslagen. Als het apparaat is vervangen of de ID is gewijzigd, werk dan de lijst met omvormer-apparaat-ID's bij in de hub-configuratie. Controleer anders het apparaat en de Modbus/TCP-verbinding."
     },
+    "setup_timed_out": {
+      "title": "Time-out bij installatie",
+      "description": "De installatie van de hub op {host} is niet binnen {timeout} seconden voltooid. Deze wachtte op apparaat-ID {device_id}. Controleer het apparaat en de Modbus/TCP-verbinding. Als het apparaat is verwijderd of de ID is gewijzigd, werk dan de lijst met omvormer-apparaat-ID's bij in de hub-configuratie. Het Home Assistant-logboek toont op welke stap de installatie wachtte."
+    },
     "detect_timeout_gpc": {
-      "title": "Global Dynamic Power Control Time -out",
-      "description": "De omvormer reageerde niet tijdens het lezen van gegevens voor Global Dynamic Power Controls."
+      "title": "Time-out voor Global Dynamic Power Control (Omvormer {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Time-out voor Global Dynamic Power Control",
+            "description": "Omvormer-apparaat-ID {device_id} op {host} reageerde niet na meerdere pogingen tijdens het lezen van gegevens voor Global Dynamic Power Controls. Deze entiteiten zijn niet beschikbaar totdat dit is opgelost.\n\nBevestig om deze functie bij de volgende polling opnieuw te detecteren. Schakel de optie voor automatische detectie van aanvullende entiteiten uit als de omvormer moeite heeft met het lezen van deze sensoren."
+          }
+        }
+      }
     },
     "detect_timeout_apc": {
-      "title": "Geavanceerde time -out voor stroomregeling",
-      "description": "De omvormer reageerde niet tijdens het lezen van gegevens voor geavanceerde stroomregeling."
+      "title": "Geavanceerde time-out voor stroomregeling (Omvormer {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Geavanceerde time-out voor stroomregeling",
+            "description": "Omvormer-apparaat-ID {device_id} op {host} reageerde niet na meerdere pogingen tijdens het lezen van gegevens voor geavanceerde stroomregeling. Deze entiteiten zijn niet beschikbaar totdat dit is opgelost.\n\nBevestig om deze functie bij de volgende polling opnieuw te detecteren. Schakel de optie voor automatische detectie van aanvullende entiteiten uit als de omvormer moeite heeft met het lezen van deze sensoren."
+          }
+        }
+      }
+    },
+    "deprecated_yaml_modbus": {
+      "title": "Modbus YAML-configuratie niet meer ondersteund",
+      "description": "De sectie `modbus` onder `solaredge_modbus_multi` in `configuration.yaml` wordt niet meer ondersteund en wordt genegeerd. Verwijder deze uit uw YAML-configuratie."
+    },
+    "deprecated_keep_modbus_open": {
+      "title": "Optie 'Houd Modbus-verbinding open' vervangen",
+      "description": "De optie \"Houd Modbus-verbinding open\" is in de configuratie van deze integratie vervangen door \"Verbinding sluiten na oproep\". Bekijk de nieuwe optie als je hetzelfde gedrag nodig hebt."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "inverter_status": {
+        "state": {
+          "I_STATUS_OFF": "Uit",
+          "I_STATUS_SLEEPING": "Slaapstand (automatisch uitschakelen)",
+          "I_STATUS_STARTING": "Netbewaking",
+          "I_STATUS_MPPT": "Productie",
+          "I_STATUS_THROTTLED": "Productie (beperkt)",
+          "I_STATUS_SHUTTING_DOWN": "Afsluiten",
+          "I_STATUS_FAULT": "Storing",
+          "I_STATUS_STANDBY": "Onderhoud"
+        }
+      },
+      "battery_status": {
+        "state": {
+          "B_STATUS_OFF": "Uit",
+          "B_STATUS_STANDBY": "Stand-by",
+          "B_STATUS_INIT": "Initialiseren",
+          "B_STATUS_CHARGE": "Laden",
+          "B_STATUS_DISCHARGE": "Ontladen",
+          "B_STATUS_FAULT": "Storing",
+          "B_STATUS_PRESERVE_CHARGE": "Lading behouden",
+          "B_STATUS_IDLE": "Inactief",
+          "B_STATUS_POWER_SAVING": "Energiebesparing"
+        }
+      }
     }
   }
 }

@@ -1,0 +1,227 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SolarEdge Modbus-konfiguration",
+        "menu_options": {
+          "scan_fast": "Snabbsökning efter växelriktare",
+          "scan_full": "Fullständig sökning efter växelriktare",
+          "manual_list": "Manuell konfiguration"
+        },
+        "menu_option_descriptions": {
+          "scan_fast": "Sök de första 32 Modbus-enhets-ID:na (1-32)",
+          "scan_full": "Sök alla Modbus-enhets-ID:n (1-247)",
+          "manual_list": "Ange manuellt en lista över växelriktarnas enhets-ID"
+        }
+      },
+      "zeroconf_confirm": {
+        "title": "Upptäckt SolarEdge-växelriktare",
+        "description": "En SolarEdge Modbus/TCP-gateway hittades på {host}:{port}. Konfigurera den nu?",
+        "data": {
+          "name": "Sensorprefix"
+        },
+        "data_description": {
+          "name": "Läggs till i början av varje enhetsnamn, följt av enheten, t.ex. I1 för växelriktare 1. Entitets-ID:n skapas från dessa namn."
+        }
+      },
+      "manual": {
+        "title": "Manuell Modbus-konfiguration",
+        "data": {
+          "name": "Sensorprefix",
+          "host": "Växelriktarens IP-adress",
+          "port": "Modbus/TCP-port",
+          "device_list": "Lista över växelriktarnas enhets-ID",
+          "bypass_device_check": "Hoppa över validering av enhets-ID"
+        },
+        "data_description": {
+          "name": "Läggs till i början av varje enhetsnamn, följt av enheten, t.ex. I1 för växelriktare 1. Entitets-ID:n skapas från dessa namn.",
+          "host": "IP-adress eller värdnamn för växelriktaren med Modbus/TCP aktiverat. Med flera växelriktare använder du ledarväxelriktaren.",
+          "port": "Modbus/TCP-porten som är inställd på växelriktaren. SolarEdge-standard är 1502.",
+          "device_list": "Modbus-enhets-ID:n för dina växelriktare. Använd en lista (1,3,10), ett intervall (1-4) eller båda (1-3,5,10). En enda växelriktare använder normalt 1.",
+          "bypass_device_check": "Lägg till enhets-ID-listan utan att ansluta för att kontrollera att varje ID svarar som en SolarEdge-växelriktare. Använd detta endast om kontrollen misslyckas för en enhet som du vet är korrekt, till exempel en som är offline under installationen."
+        }
+      },
+      "scan_ask_host": {
+        "title": "Sök efter SolarEdge-växelriktare",
+        "data": {
+          "name": "Sensorprefix",
+          "host": "Växelriktarens IP-adress",
+          "port": "Modbus/TCP-port"
+        },
+        "data_description": {
+          "name": "Läggs till i början av varje enhetsnamn, följt av enheten, t.ex. I1 för växelriktare 1. Entitets-ID:n skapas från dessa namn.",
+          "host": "IP-adress eller värdnamn för växelriktaren med Modbus/TCP aktiverat. Med flera växelriktare använder du ledarväxelriktaren.",
+          "port": "Modbus/TCP-porten som är inställd på växelriktaren. SolarEdge-standard är 1502."
+        }
+      },
+      "scan_complete": {
+        "title": "Sökning slutförd"
+      },
+      "features_info": {
+        "title": "Batterier och styrfunktioner är inte aktiverade ännu",
+        "description": "Som standard är endast officiellt dokumenterade SolarEdge-funktioner aktiverade: växelriktare, Synergy-växelriktare och mätare.\n\nBatteriövervakning och alla läs-/skrivstyrfunktioner (batteristyrning, styrning av anläggningsgräns) baseras på dokumentation som SolarEdge inte publicerar. Dessa är inaktiverade som standard och måste aktiveras separat via integrationens konfigurationsalternativ efter att denna hubb har lagts till.\n\nAlla växelriktare stöder inte detta via Modbus. Du kan behöva kontakta SolarEdge-support för att få tillgång till batteri- och styrfunktioner för din anläggning."
+      },
+      "reconfigure": {
+        "title": "SolarEdge Modbus-konfiguration",
+        "data": {
+          "host": "Växelriktarens IP-adress",
+          "port": "Modbus/TCP-port",
+          "device_list": "Lista över växelriktarnas enhets-ID"
+        },
+        "data_description": {
+          "host": "IP-adress eller värdnamn för växelriktaren med Modbus/TCP aktiverat. Med flera växelriktare använder du ledarväxelriktaren.",
+          "port": "Modbus/TCP-porten som är inställd på växelriktaren. SolarEdge-standard är 1502.",
+          "device_list": "Modbus-enhets-ID:n för dina växelriktare. Använd en lista (1,3,10), ett intervall (1-4) eller båda (1-3,5,10). En enda växelriktare använder normalt 1."
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Enheten är redan konfigurerad!",
+      "invalid_device_id": "Enhets-ID måste vara mellan 1 och 247.",
+      "invalid_inverter_count": "Måste vara mellan 1 och 32 växelriktare.",
+      "invalid_host": "Ogiltig IP-adress.",
+      "invalid_tcp_port": "Giltigt portintervall är 1 till 65535.",
+      "invalid_range_format": "Posten ser ut som ett intervall, men endast ett '-' per intervall är tillåtet.",
+      "invalid_range_lte": "Start-ID i ett intervall måste vara mindre än eller lika med slut-ID.",
+      "empty_device_id": "ID-listan innehåller ett tomt eller odefinierat värde.",
+      "scan_failed": "Det gick inte att söka efter växelriktare. Kontrollera din anslutning och försök igen."
+    },
+    "abort": {
+      "already_configured": "Värd och port är redan konfigurerade i en annan hubb.",
+      "cannot_connect": "Det gick inte att ansluta till den upptäckta enheten.",
+      "reconfigure_successful": "Omkonfigurationen lyckades"
+    },
+    "progress": {
+      "scanning_for_inverters": "Söker efter SolarEdge-växelriktare..."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "SolarEdge Modbus-alternativ",
+        "data": {
+          "scan_interval": "Avfrågningsfrekvens (sekunder)",
+          "close_after_polling": "Stäng anslutningen efter avfrågning",
+          "detect_meters": "Automatisk identifiering av mätare",
+          "detect_batteries": "Automatisk identifiering av batterier",
+          "detect_extras": "Automatisk identifiering av ytterligare entiteter",
+          "advanced_power_control": "Effektstyrningsalternativ",
+          "request_timeout": "Tidsgräns för Modbus-förfrågan (sekunder)",
+          "sleep_after_write": "Fördröjning för växelriktarkommando (sekunder)"
+        },
+        "data_description": {
+          "scan_interval": "Hur ofta, i sekunder, data läses från växelriktarna.",
+          "close_after_polling": "Stäng Modbus/TCP-anslutningen efter varje lyckad avläsning. Aktivera detta om något annat också ansluter till växelriktaren, eftersom den bara accepterar en anslutning åt gången.",
+          "detect_meters": "Leta efter mätare anslutna till varje växelriktare när integrationen startar.",
+          "detect_batteries": "Leta efter batterier anslutna till varje växelriktare när integrationen startar. Batteristödet använder register som SolarEdge inte officiellt dokumenterar.",
+          "detect_extras": "Kontrollera om varje växelriktare stöder Global Dynamic Power Control och Advanced Power Control, och lägg till deras entiteter om de hittas.",
+          "advanced_power_control": "Visa steget Alternativ för effektstyrning härnäst, för att slå på eller av lagringsstyrning och styrning av anläggningsgräns.",
+          "request_timeout": "Hur länge, i sekunder, att vänta på svar på varje Modbus-förfrågan.",
+          "sleep_after_write": "Sekunder att vänta mellan förfrågningar till en växelriktare efter att ett kommando har skrivits till den. Vissa växelriktare behöver tid att behandla ett kommando innan de svarar igen. 0 stänger av detta."
+        }
+      },
+      "adv_pwr_ctl": {
+        "title": "Effektstyrningsalternativ",
+        "data": {
+          "adv_storage_control": "Aktivera lagringsstyrning",
+          "adv_site_limit_control": "Aktivera styrning av anläggningsgräns"
+        },
+        "data_description": {
+          "adv_storage_control": "Lägg till entiteter som ändrar inställningarna för batterilagringsstyrning på växelriktaren.",
+          "adv_site_limit_control": "Lägg till entiteter som ändrar anläggningens export- och produktionsgränser på växelriktaren."
+        },
+        "description": "Varning: Dessa alternativ kan bryta mot elavtal, ändra din elräkning, kräva särskild utrustning och skriva över SolarEdges eller din installatörs provisionering. Används på egen risk! Justerbara parametrar i Modbus-register är avsedda för långtidslagring. Regelbundna ändringar kan skada flashminnet."
+      },
+      "battery_options": {
+        "title": "Batterialternativ",
+        "data": {
+          "allow_battery_energy_reset": "Tillåt återställning av batterienergi",
+          "battery_energy_reset_cycles": "Uppdateringscykler för att återställa batterienergi",
+          "battery_rating_adjust": "Justering av batterikapacitet (procent)"
+        },
+        "data_description": {
+          "allow_battery_energy_reset": "Vissa batterier rapporterar energisummor som minskar eller nollställs. När av ignoreras ett lägre värde och det senaste värdet behålls. När på accepteras det lägre värdet.",
+          "battery_energy_reset_cycles": "Antal avläsningar i rad som ett lägre batterienergivärde måste ses innan det accepteras. Används bara när Tillåt nollställning av batterienergi är på.",
+          "battery_rating_adjust": "Procent över batteriets nominella energi som den tillgängliga energin får nå innan värdet behandlas som ogiltigt. Använd detta om ditt batteri rapporterar mer än sitt nominella värde."
+        }
+      }
+    },
+    "error": {
+      "invalid_scan_interval": "Giltigt intervall är 1 till 86400 sekunder.",
+      "invalid_request_timeout": "Giltigt intervall är 1 till 60 sekunder.",
+      "invalid_sleep_interval": "Giltigt intervall är 0 till 60 sekunder.",
+      "invalid_percent": "Giltigt intervall är 0 till 100 procent."
+    }
+  },
+  "issues": {
+    "check_configuration": {
+      "title": "Kontrollera Modbus-konfiguration",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Kontrollera Modbus-konfiguration",
+            "description": "Ett fel uppstod vid försök att öppna en Modbus/TCP-anslutning.\n\nBekräfta din konfiguration.",
+            "data": {
+              "host": "Växelriktarens IP-adress",
+              "port": "Modbus/TCP-port",
+              "device_list": "Lista över växelriktarnas enhets-ID"
+            },
+            "data_description": {
+              "host": "IP-adress eller värdnamn för växelriktaren med Modbus/TCP aktiverat. Med flera växelriktare använder du ledarväxelriktaren.",
+              "port": "Modbus/TCP-porten som är inställd på växelriktaren. SolarEdge-standard är 1502.",
+              "device_list": "Modbus-enhets-ID:n för dina växelriktare. Använd en lista (1,3,10), ett intervall (1-4) eller båda (1-3,5,10). En enda växelriktare använder normalt 1."
+            }
+          }
+        },
+        "error": {
+          "invalid_device_id": "Enhets-ID måste vara mellan 1 och 247.",
+          "invalid_inverter_count": "Måste vara mellan 1 och 32 växelriktare.",
+          "invalid_host": "Ogiltig IP-adress.",
+          "invalid_tcp_port": "Giltigt portintervall är 1 till 65535.",
+          "invalid_range_format": "Posten ser ut som ett intervall, men endast ett '-' per intervall är tillåtet.",
+          "invalid_range_lte": "Start-ID i ett intervall måste vara mindre än eller lika med slut-ID.",
+          "empty_device_id": "ID-listan innehåller ett tomt eller odefinierat värde.",
+          "already_configured": "Värd och port är redan konfigurerade i en annan hubb."
+        }
+      }
+    },
+    "setup_inverter_id_failed": {
+      "title": "Ogiltigt enhets-ID för växelriktare",
+      "description": "Växelriktarens enhets-ID {device_id} på {host} svarar inte eller är inte en giltig SolarEdge-växelriktare. Den har hoppats över. Om enheten byttes ut eller dess ID ändrades, uppdatera listan över växelriktarnas enhets-ID i hubbens konfiguration. Kontrollera annars enheten och Modbus/TCP-anslutningen."
+    },
+    "setup_timed_out": {
+      "title": "Tidsgränsen för konfigurationen överskreds",
+      "description": "Konfigurationen av hubben på {host} slutfördes inte inom {timeout} sekunder. Den väntade på enhets-ID {device_id}. Kontrollera enheten och Modbus/TCP-anslutningen. Om enheten togs bort eller dess ID ändrades, uppdatera listan över växelriktarnas enhets-ID i hubbens konfiguration. Home Assistant-loggen visar vilket steg konfigurationen väntade på."
+    },
+    "detect_timeout_gpc": {
+      "title": "Tidsgräns för global dynamisk effektstyrning (växelriktare {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Tidsgräns för global dynamisk effektstyrning",
+            "description": "Växelriktarens enhets-ID {device_id} på {host} svarade inte vid läsning av data för global dynamisk effektstyrning efter flera försök. Dessa entiteter är otillgängliga tills detta är löst.\n\nBekräfta för att försöka identifiera denna funktion igen vid nästa avfrågning. Inaktivera alternativet Automatisk identifiering av ytterligare entiteter om växelriktaren har problem med att läsa dessa sensorer."
+          }
+        }
+      }
+    },
+    "detect_timeout_apc": {
+      "title": "Tidsgräns för avancerad effektstyrning (växelriktare {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Tidsgräns för avancerad effektstyrning",
+            "description": "Växelriktarens enhets-ID {device_id} på {host} svarade inte vid läsning av data för avancerad effektstyrning efter flera försök. Dessa entiteter är otillgängliga tills detta är löst.\n\nBekräfta för att försöka identifiera denna funktion igen vid nästa avfrågning. Inaktivera alternativet Automatisk identifiering av ytterligare entiteter om växelriktaren har problem med att läsa dessa sensorer."
+          }
+        }
+      }
+    },
+    "deprecated_yaml_modbus": {
+      "title": "Modbus YAML-konfiguration stöds inte längre",
+      "description": "Avsnittet `modbus` under `solaredge_modbus_multi` i `configuration.yaml` stöds inte längre och ignoreras. Ta bort det från din YAML-konfiguration."
+    },
+    "deprecated_keep_modbus_open": {
+      "title": "Alternativet Håll Modbus-anslutningen öppen har ersatts",
+      "description": "Alternativet \"Håll Modbus-anslutningen öppen\" har ersatts av \"Stäng anslutningen efter avfrågning\" i den här integrationens konfiguration. Granska det nya alternativet om du behöver samma beteende."
+    }
+  }
+}

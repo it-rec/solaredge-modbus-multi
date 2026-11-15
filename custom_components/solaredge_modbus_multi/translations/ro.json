@@ -1,0 +1,227 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurare Modbus SolarEdge",
+        "menu_options": {
+          "scan_fast": "Scanare Rapidă pentru Invertoare",
+          "scan_full": "Scanare Completă pentru Invertoare",
+          "manual_list": "Configurare Manuală"
+        },
+        "menu_option_descriptions": {
+          "scan_fast": "Scanează primele 32 de ID-uri de dispozitiv Modbus (1-32)",
+          "scan_full": "Scanează toate ID-urile de dispozitiv Modbus (1-247)",
+          "manual_list": "Introduceți manual o listă de ID-uri de dispozitiv ale invertoarelor"
+        }
+      },
+      "zeroconf_confirm": {
+        "title": "Invertor SolarEdge Descoperit",
+        "description": "A fost găsit un gateway SolarEdge Modbus/TCP la {host}:{port}. Configurați-l acum?",
+        "data": {
+          "name": "Prefix Senzor"
+        },
+        "data_description": {
+          "name": "Se adaugă la începutul numelui fiecărui dispozitiv, urmat de dispozitiv, de exemplu I1 pentru invertorul 1. ID-urile entităților sunt create din aceste nume."
+        }
+      },
+      "manual": {
+        "title": "Configurare Manuală Modbus",
+        "data": {
+          "name": "Prefix Senzor",
+          "host": "Adresa IP a Invertorului",
+          "port": "Port Modbus/TCP",
+          "device_list": "Lista de ID-uri de Dispozitiv ale Invertoarelor",
+          "bypass_device_check": "Omite validarea ID-ului dispozitivului"
+        },
+        "data_description": {
+          "name": "Se adaugă la începutul numelui fiecărui dispozitiv, urmat de dispozitiv, de exemplu I1 pentru invertorul 1. ID-urile entităților sunt create din aceste nume.",
+          "host": "Adresa IP sau numele de gazdă al invertorului cu Modbus/TCP activat. La mai multe invertoare, folosiți invertorul principal (leader).",
+          "port": "Portul Modbus/TCP setat pe invertor. Valoarea implicită SolarEdge este 1502.",
+          "device_list": "ID-urile de dispozitiv Modbus ale invertoarelor. Folosiți o listă (1,3,10), un interval (1-4) sau ambele (1-3,5,10). Un singur invertor folosește de obicei 1.",
+          "bypass_device_check": "Adăugați lista de ID-uri de dispozitiv fără a vă conecta pentru a verifica dacă fiecare ID răspunde ca invertor SolarEdge. Utilizați această opțiune numai dacă verificarea eșuează pentru un dispozitiv despre care știți că este corect, cum ar fi unul offline în timpul configurării."
+        }
+      },
+      "scan_ask_host": {
+        "title": "Căutare Invertoare SolarEdge",
+        "data": {
+          "name": "Prefix Senzor",
+          "host": "Adresa IP a Invertorului",
+          "port": "Port Modbus/TCP"
+        },
+        "data_description": {
+          "name": "Se adaugă la începutul numelui fiecărui dispozitiv, urmat de dispozitiv, de exemplu I1 pentru invertorul 1. ID-urile entităților sunt create din aceste nume.",
+          "host": "Adresa IP sau numele de gazdă al invertorului cu Modbus/TCP activat. La mai multe invertoare, folosiți invertorul principal (leader).",
+          "port": "Portul Modbus/TCP setat pe invertor. Valoarea implicită SolarEdge este 1502."
+        }
+      },
+      "scan_complete": {
+        "title": "Scanare Finalizată"
+      },
+      "features_info": {
+        "title": "Bateriile și Comenzile Nu Sunt Încă Activate",
+        "description": "În mod implicit, sunt activate doar funcțiile documentate oficial de SolarEdge: invertoare, invertoare Synergy și contoare.\n\nMonitorizarea bateriei și toate funcțiile de control citire/scriere (control baterie, control limită de sit) se bazează pe documentație pe care SolarEdge nu o publică. Acestea sunt dezactivate în mod implicit și trebuie activate separat din opțiunile de configurare ale integrării după ce acest hub este adăugat.\n\nNu toate invertoarele acceptă acest lucru prin Modbus. Este posibil să fie necesar să contactați asistența SolarEdge pentru a expune accesul la baterie și comenzi pe instalația dumneavoastră."
+      },
+      "reconfigure": {
+        "title": "Configurare Modbus SolarEdge",
+        "data": {
+          "host": "Adresa IP a Invertorului",
+          "port": "Port Modbus/TCP",
+          "device_list": "Lista de ID-uri de Dispozitiv ale Invertoarelor"
+        },
+        "data_description": {
+          "host": "Adresa IP sau numele de gazdă al invertorului cu Modbus/TCP activat. La mai multe invertoare, folosiți invertorul principal (leader).",
+          "port": "Portul Modbus/TCP setat pe invertor. Valoarea implicită SolarEdge este 1502.",
+          "device_list": "ID-urile de dispozitiv Modbus ale invertoarelor. Folosiți o listă (1,3,10), un interval (1-4) sau ambele (1-3,5,10). Un singur invertor folosește de obicei 1."
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Dispozitivul este deja configurat!",
+      "invalid_device_id": "ID-ul dispozitivului trebuie să fie între 1 și 247.",
+      "invalid_inverter_count": "Trebuie să fie între 1 și 32 de invertoare.",
+      "invalid_host": "Adresă IP nevalidă.",
+      "invalid_tcp_port": "Intervalul de porturi valid este 1 până la 65535.",
+      "invalid_range_format": "Intrarea pare a fi un interval, dar este permis doar un singur '-' per interval.",
+      "invalid_range_lte": "ID-ul de început al unui interval trebuie să fie mai mic sau egal cu ID-ul de sfârșit.",
+      "empty_device_id": "Lista de ID-uri conține o valoare goală sau nedefinită.",
+      "scan_failed": "Scanarea invertoarelor a eșuat. Verificați conexiunea și încercați din nou."
+    },
+    "abort": {
+      "already_configured": "Gazda și portul sunt deja configurate într-un alt hub.",
+      "cannot_connect": "Nu s-a putut conecta la dispozitivul descoperit.",
+      "reconfigure_successful": "Reconfigurarea a fost efectuată cu succes"
+    },
+    "progress": {
+      "scanning_for_inverters": "Se caută invertoare SolarEdge..."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opțiuni Modbus SolarEdge",
+        "data": {
+          "scan_interval": "Frecvență de Interogare (secunde)",
+          "close_after_polling": "Închide Conexiunea După Interogare",
+          "detect_meters": "Detectare Automată a Contoarelor",
+          "detect_batteries": "Detectare Automată a Bateriilor",
+          "detect_extras": "Detectare Automată a Entităților Suplimentare",
+          "advanced_power_control": "Opțiuni de Control al Puterii",
+          "request_timeout": "Timeout Solicitare Modbus (secunde)",
+          "sleep_after_write": "Întârziere Comandă Invertor (secunde)"
+        },
+        "data_description": {
+          "scan_interval": "Cât de des, în secunde, se citesc datele de la invertoare.",
+          "close_after_polling": "Închide conexiunea Modbus/TCP după fiecare interogare reușită. Activați dacă și altceva se conectează la invertor, deoarece acesta acceptă o singură conexiune odată.",
+          "detect_meters": "Caută contoarele conectate la fiecare invertor la pornirea integrării.",
+          "detect_batteries": "Caută bateriile conectate la fiecare invertor la pornirea integrării. Suportul pentru baterii folosește registre pe care SolarEdge nu le documentează oficial.",
+          "detect_extras": "Verifică dacă fiecare invertor acceptă Global Dynamic Power Control și Advanced Power Control și adaugă entitățile acestora dacă sunt găsite.",
+          "advanced_power_control": "Afișează apoi pasul Opțiuni de control al puterii, pentru a activa sau dezactiva controlul stocării și controlul limitei locației.",
+          "request_timeout": "Cât timp, în secunde, se așteaptă un răspuns la fiecare cerere Modbus.",
+          "sleep_after_write": "Secunde de așteptare între cererile către un invertor după ce i s-a scris o comandă. Unele invertoare au nevoie de timp pentru a procesa o comandă înainte de a răspunde din nou. 0 dezactivează această opțiune."
+        }
+      },
+      "adv_pwr_ctl": {
+        "title": "Opțiuni de Control al Puterii",
+        "data": {
+          "adv_storage_control": "Activează Controlul Stocării",
+          "adv_site_limit_control": "Activează Controlul Limitei de Sit"
+        },
+        "data_description": {
+          "adv_storage_control": "Adaugă entități care modifică setările de control al stocării bateriei pe invertor.",
+          "adv_site_limit_control": "Adaugă entități care modifică limitele de export și producție ale locației pe invertor."
+        },
+        "description": "Avertisment: Aceste opțiuni pot încălca contractele cu furnizorul de energie, pot modifica factura de energie, pot necesita echipamente speciale și pot suprascrie configurarea efectuată de SolarEdge sau de instalatorul dumneavoastră. Utilizați pe propriul risc! Parametrii ajustabili din registrele Modbus sunt destinați stocării pe termen lung. Modificările periodice pot deteriora memoria flash."
+      },
+      "battery_options": {
+        "title": "Opțiuni Baterie",
+        "data": {
+          "allow_battery_energy_reset": "Permite Resetarea Energiei Bateriei",
+          "battery_energy_reset_cycles": "Cicluri de Actualizare pentru Resetarea Energiei Bateriei",
+          "battery_rating_adjust": "Ajustare Capacitate Baterie (procent)"
+        },
+        "data_description": {
+          "allow_battery_energy_reset": "Unele baterii raportează totaluri de energie care scad sau se resetează la zero. Când este dezactivat, o valoare mai mică este ignorată și se păstrează ultima valoare. Când este activat, valoarea mai mică este acceptată.",
+          "battery_energy_reset_cycles": "Numărul de interogări consecutive în care o valoare mai mică a energiei bateriei trebuie văzută înainte de a fi acceptată. Folosit doar când Permite resetarea energiei bateriei este activat.",
+          "battery_rating_adjust": "Procentul peste energia nominală a bateriei pe care energia disponibilă îl poate atinge înainte ca valoarea să fie considerată invalidă. Folosiți dacă bateria raportează mai mult decât valoarea nominală."
+        }
+      }
+    },
+    "error": {
+      "invalid_scan_interval": "Intervalul valid este 1 până la 86400 de secunde.",
+      "invalid_request_timeout": "Intervalul valid este 1 până la 60 de secunde.",
+      "invalid_sleep_interval": "Intervalul valid este 0 până la 60 de secunde.",
+      "invalid_percent": "Intervalul valid este 0 până la 100 la sută."
+    }
+  },
+  "issues": {
+    "check_configuration": {
+      "title": "Verificați Configurația Modbus",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Verificați Configurația Modbus",
+            "description": "A apărut o eroare la încercarea de a deschide o conexiune Modbus/TCP.\n\nVă rugăm să confirmați configurația.",
+            "data": {
+              "host": "Adresa IP a Invertorului",
+              "port": "Port Modbus/TCP",
+              "device_list": "Lista de ID-uri de Dispozitiv ale Invertoarelor"
+            },
+            "data_description": {
+              "host": "Adresa IP sau numele de gazdă al invertorului cu Modbus/TCP activat. La mai multe invertoare, folosiți invertorul principal (leader).",
+              "port": "Portul Modbus/TCP setat pe invertor. Valoarea implicită SolarEdge este 1502.",
+              "device_list": "ID-urile de dispozitiv Modbus ale invertoarelor. Folosiți o listă (1,3,10), un interval (1-4) sau ambele (1-3,5,10). Un singur invertor folosește de obicei 1."
+            }
+          }
+        },
+        "error": {
+          "invalid_device_id": "ID-ul dispozitivului trebuie să fie între 1 și 247.",
+          "invalid_inverter_count": "Trebuie să fie între 1 și 32 de invertoare.",
+          "invalid_host": "Adresă IP nevalidă.",
+          "invalid_tcp_port": "Intervalul de porturi valid este 1 până la 65535.",
+          "invalid_range_format": "Intrarea pare a fi un interval, dar este permis doar un singur '-' per interval.",
+          "invalid_range_lte": "ID-ul de început al unui interval trebuie să fie mai mic sau egal cu ID-ul de sfârșit.",
+          "empty_device_id": "Lista de ID-uri conține o valoare goală sau nedefinită.",
+          "already_configured": "Gazda și portul sunt deja configurate într-un alt hub."
+        }
+      }
+    },
+    "setup_inverter_id_failed": {
+      "title": "ID de Dispozitiv al Invertorului Nevalid",
+      "description": "ID-ul de Dispozitiv al Invertorului {device_id} de la {host} nu răspunde sau nu este un invertor SolarEdge valid. A fost omis. Dacă dispozitivul a fost înlocuit sau ID-ul acestuia s-a schimbat, actualizați Lista de ID-uri de Dispozitiv ale Invertoarelor din configurația hub-ului. În caz contrar, verificați dispozitivul și conexiunea Modbus/TCP."
+    },
+    "setup_timed_out": {
+      "title": "Timpul de configurare a expirat",
+      "description": "Configurarea hub-ului de la {host} nu s-a încheiat în {timeout} secunde. Aștepta ID-ul de Dispozitiv {device_id}. Verificați dispozitivul și conexiunea Modbus/TCP. Dacă dispozitivul a fost eliminat sau ID-ul acestuia s-a schimbat, actualizați Lista de ID-uri de Dispozitiv ale Invertoarelor din configurația hub-ului. Jurnalul Home Assistant arată la ce pas aștepta configurarea."
+    },
+    "detect_timeout_gpc": {
+      "title": "Timeout Control Dinamic Global al Puterii (Invertor {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Timeout Control Dinamic Global al Puterii",
+            "description": "ID-ul de Dispozitiv al Invertorului {device_id} de la {host} nu a răspuns la citirea datelor pentru Controalele Dinamice Globale ale Puterii, după mai multe încercări. Aceste entități sunt indisponibile până la rezolvarea problemei.\n\nConfirmați pentru a încerca detectarea acestei funcții din nou la următoarea interogare. Dezactivați opțiunea Detectare Automată a Entităților Suplimentare dacă invertorul are probleme la citirea acestor senzori."
+          }
+        }
+      }
+    },
+    "detect_timeout_apc": {
+      "title": "Timeout Control Avansat al Puterii (Invertor {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Timeout Control Avansat al Puterii",
+            "description": "ID-ul de Dispozitiv al Invertorului {device_id} de la {host} nu a răspuns la citirea datelor pentru Controalele Avansate ale Puterii, după mai multe încercări. Aceste entități sunt indisponibile până la rezolvarea problemei.\n\nConfirmați pentru a încerca detectarea acestei funcții din nou la următoarea interogare. Dezactivați opțiunea Detectare Automată a Entităților Suplimentare dacă invertorul are probleme la citirea acestor senzori."
+          }
+        }
+      }
+    },
+    "deprecated_yaml_modbus": {
+      "title": "Configurația Modbus YAML Nu Mai Este Acceptată",
+      "description": "Secțiunea `modbus` de sub `solaredge_modbus_multi` din `configuration.yaml` nu mai este acceptată și este ignorată. Vă rugăm să o eliminați din configurația YAML."
+    },
+    "deprecated_keep_modbus_open": {
+      "title": "Opțiunea Menține Conexiunea Modbus Deschisă a Fost Înlocuită",
+      "description": "Opțiunea „Menține Conexiunea Modbus Deschisă” a fost înlocuită cu „Închide Conexiunea După Interogare” în configurația acestei integrări. Verificați noua opțiune dacă aveți nevoie de același comportament."
+    }
+  }
+}

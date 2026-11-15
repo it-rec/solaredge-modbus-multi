@@ -2,24 +2,35 @@
 
 from __future__ import annotations
 
-import re
 from enum import IntEnum, StrEnum
-from typing import Final
+import re
+from typing import Any, Final
+
+from homeassistant.util.hass_dict import HassKey
 
 DOMAIN = "solaredge_modbus_multi"
+DATA_YAML: HassKey[dict[str, Any]] = HassKey(f"{DOMAIN}_yaml")
 DEFAULT_NAME = "SolarEdge"
 
 SETUP_TYPE = "setup_type"
 SETUP_SCAN_FAST = "scan_fast"  # Scan IDs 1-32
 SETUP_SCAN_FULL = "scan_full"  # Scan IDs 1-247
 SETUP_MANUAL = "manual_list"
+BYPASS_DEVICE_CHECK = "bypass_device_check"
 
-# raise a startup exception if pymodbus version is less than this
-PYMODBUS_REQUIRED_VERSION = "3.8.3"
+# Seconds to wait for a TCP connection when probing a discovered inverter
+ZEROCONF_PROBE_TIMEOUT = 3.0
+
+# Number of read-only poll cycles to keep a unit's post-write message
+# spacing active before clearing it back to 0.
+WRITE_SETTLE_CYCLES: Final = 2
+
+# raise a startup exception if library versions are less than this
+TMODBUS_REQUIRED_VERSION = "0.6.1"
+MODBUS_CONNECTION_REQUIRED_VERSION = "4.10.0"
 
 # units missing in homeassistant core
 ENERGY_VOLT_AMPERE_HOUR: Final = "VAh"
-ENERGY_VOLT_AMPERE_REACTIVE_HOUR: Final = "varh"
 
 # from voluptuous/validators.py
 DOMAIN_REGEX = re.compile(
@@ -41,63 +52,33 @@ DETECT_EVSE_REGEX = re.compile(
 )
 
 STATUS_VENDOR4_VERSION = "3.20.0"  # solaredge firmware version
+MMPPT_UNITS_VERSION = "4.13.0"  # solaredge firmware version
 INVERTED_POWER_VERSION = "2026.2.0"  # home assistant core version
 
+# Minimum gap, in seconds, between every request on the connection.
+# modbus-connection only serializes/paces requests when this is non-zero
+# The idea is to help with the coordinator requesting a refresh with a write
+# at the same time. Set to 0 to disable.
+MESSAGE_SPACING = 0.1
 
-class ModbusExceptions:
-    """An enumeration of the valid modbus exceptions."""
+# Seconds a setup or refresh may run before it is given up on as wedged. This
+# is not sized to the devices: every request has its own timeout, and taking
+# this long means something is broken or misconfigured.
+REFRESH_WATCHDOG = 300
 
-    """
-        Copied from pymodbus source:
-        https://github.com/pymodbus-dev/pymodbus/blob/a1c14c7a8fbea52618ba1cbc9933c1dd24c3339d/pymodbus/pdu/pdu.py#L72
-    """
-
-    IllegalFunction = 0x01
-    IllegalAddress = 0x02
-    IllegalValue = 0x03
-    DeviceFailure = 0x04
-    Acknowledge = 0x05
-    DeviceBusy = 0x06
-    NegativeAcknowledge = 0x07
-    MemoryParityError = 0x08
-    GatewayPathUnavailable = 0x0A
-    GatewayNoResponse = 0x0B
+# Seconds a refresh may take before it is reported as slow. A healthy refresh
+# takes a second or two.
+SLOW_REFRESH = 60
 
 
 class RetrySettings(IntEnum):
     """Retry settings when opening a connection to the inverter fails."""
 
-    Time = 800  # first attempt in milliseconds
-    Ratio = 3  # time multiplier between each attempt
-    Limit = 5  # number of attempts before failing
-
-
-class ModbusDefaults(IntEnum):
-    """Values to pass to pymodbus"""
-
-    """
-        ReconnectDelay doubles automatically with each unsuccessful connect, from
-        ReconnectDelay to ReconnectDelayMax.
-        Set `ReconnectDelay = 0` to avoid automatic reconnection.
-        Disabled because it didn't work properly with HA Async in PR#360.
-
-        ReconnectDelay and ReconnectDelayMax can be set to seconds.milliseconds
-        values using the advanced YAML configuration option.
-    """
-
-    Timeout = 3  # Timeout for a request, in seconds.
-    Retries = 3  # Max number of retries per request.
-    ReconnectDelay = 0  # Minimum in seconds before reconnecting.
-    ReconnectDelayMax = 3  # Maximum in seconds before reconnecting.
-
-
-class SolarEdgeTimeouts(IntEnum):
-    """Timeouts in milliseconds."""
-
-    Inverter = 8400
-    Device = 1200
-    Init = 1200
-    Read = 6000
+    Time = 1000  # first attempt in milliseconds
+    Ratio = 2  # time multiplier between each attempt
+    Limit = 6  # number of attempts before failing
+    RequestRetries = 3  # max attempts for a single modbus request
+    FeatureProbeTimeouts = 3  # failures tolerated for an already-detected feature
 
 
 class BatteryLimit(IntEnum):
@@ -116,8 +97,9 @@ class BatteryLimit(IntEnum):
 class ConfDefaultInt(IntEnum):
     """Defaults for options that are integers."""
 
-    SCAN_INTERVAL = 300
+    SCAN_INTERVAL = 10
     PORT = 1502
+    REQUEST_TIMEOUT = 10
     SLEEP_AFTER_WRITE = 0
     BATTERY_RATING_ADJUST = 0
     BATTERY_ENERGY_RESET_CYCLES = 0
@@ -129,11 +111,11 @@ class ConfDefaultFlag(IntEnum):
     DETECT_METERS = 1
     DETECT_BATTERIES = 0
     DETECT_EXTRAS = 0
-    KEEP_MODBUS_OPEN = 0
     ADV_PWR_CONTROL = 0
     ADV_STORAGE_CONTROL = 0
     ADV_SITE_LIMIT_CONTROL = 0
     ALLOW_BATTERY_ENERGY_RESET = 0
+    CLOSE_AFTER_POLLING = 0
 
 
 class ConfDefaultStr(StrEnum):
@@ -143,18 +125,21 @@ class ConfDefaultStr(StrEnum):
 
 
 class ConfName(StrEnum):
+    """Conf name."""
+
     DEVICE_LIST = "device_list"
     DETECT_METERS = "detect_meters"
     DETECT_BATTERIES = "detect_batteries"
     DETECT_EXTRAS = "detect_extras"
-    KEEP_MODBUS_OPEN = "keep_modbus_open"
     ADV_PWR_CONTROL = "advanced_power_control"
     ADV_STORAGE_CONTROL = "adv_storage_control"
     ADV_SITE_LIMIT_CONTROL = "adv_site_limit_control"
     ALLOW_BATTERY_ENERGY_RESET = "allow_battery_energy_reset"
+    REQUEST_TIMEOUT = "request_timeout"
     SLEEP_AFTER_WRITE = "sleep_after_write"
     BATTERY_RATING_ADJUST = "battery_rating_adjust"
     BATTERY_ENERGY_RESET_CYCLES = "battery_energy_reset_cycles"
+    CLOSE_AFTER_POLLING = "close_after_polling"
 
     # Old config entry names for migration
     NUMBER_INVERTERS = "number_of_inverters"
@@ -162,6 +147,8 @@ class ConfName(StrEnum):
 
 
 class SunSpecAccum(IntEnum):
+    """Sun spec accum."""
+
     NA16 = 0x0000
     NA32 = 0x00000000
     LIMIT16 = 0xFFFF
@@ -169,6 +156,8 @@ class SunSpecAccum(IntEnum):
 
 
 class SunSpecNotImpl(IntEnum):
+    """Sun spec not impl."""
+
     INT16 = 0x8000
     UINT16 = 0xFFFF
     INT32 = 0x80000000
@@ -350,6 +339,18 @@ BATTERY_STATUS_TEXT = {
     10: "Power Saving",
 }
 
+DER_STORAGE_STATUS = {
+    0: "OK",
+    1: "WARNING",
+    2: "ERROR",
+}
+
+DER_STORAGE_STATUS_TEXT = {
+    0: "No Error",
+    1: "Warning",
+    2: "Error",
+}
+
 RRCR_STATUS = {
     3: "L1",
     2: "L2",
@@ -417,6 +418,7 @@ LIMIT_CONTROL_MODE = {
 LIMIT_CONTROL = {0: "Total", 1: "Per Phase"}
 
 VENDOR4_STATUS: dict[int, dict[int, str]] = {
+    0x0: {0x0: "No Error"},
     0x3: {
         0x0: "Reset",
         0x1: "Set Real Time Clock",

@@ -14,13 +14,31 @@
           "manual_list": "Skriv inn en liste over vekselretter-enhets-IDer manuelt"
         }
       },
+      "zeroconf_confirm": {
+        "title": "Oppdaget SolarEdge-vekselretter",
+        "description": "En SolarEdge Modbus/TCP-gateway ble funnet på {host}:{port}. Sette den opp nå?",
+        "data": {
+          "name": "Sensorprefiks"
+        },
+        "data_description": {
+          "name": "Legges til i starten av hvert enhetsnavn, etterfulgt av enheten, f.eks. I1 for inverter 1. Entitets-ID-er lages fra disse navnene."
+        }
+      },
       "manual": {
         "title": "Manuell Modbus-konfigurasjon",
         "data": {
           "name": "Sensorvoorvoegsel",
           "host": "IP-adres van omvormer",
           "port": "Modbus/TCP-poort",
-          "device_list": "Inverter-enhetsliste"
+          "device_list": "Inverter-enhetsliste",
+          "bypass_device_check": "Hopp over validering av enhets-ID"
+        },
+        "data_description": {
+          "name": "Legges til i starten av hvert enhetsnavn, etterfulgt av enheten, f.eks. I1 for inverter 1. Entitets-ID-er lages fra disse navnene.",
+          "host": "IP-adresse eller vertsnavn til inverteren med Modbus/TCP aktivert. Med flere invertere bruker du leder-inverteren.",
+          "port": "Modbus/TCP-porten som er satt på inverteren. SolarEdge-standarden er 1502.",
+          "device_list": "Modbus-enhets-ID-er for inverterne dine. Bruk en liste (1,3,10), et område (1-4) eller begge (1-3,5,10). En enkelt inverter bruker vanligvis 1.",
+          "bypass_device_check": "Legg til enhets-ID-listen uten å koble til for å sjekke at hver ID svarer som en SolarEdge-vekselretter. Bruk dette bare hvis kontrollen mislykkes for en enhet du vet er riktig, for eksempel en som er frakoblet under oppsettet."
         }
       },
       "scan_ask_host": {
@@ -29,6 +47,11 @@
           "name": "Sensorvoorvoegsel",
           "host": "IP-adres van omvormer",
           "port": "Modbus/TCP-poort"
+        },
+        "data_description": {
+          "name": "Legges til i starten av hvert enhetsnavn, etterfulgt av enheten, f.eks. I1 for inverter 1. Entitets-ID-er lages fra disse navnene.",
+          "host": "IP-adresse eller vertsnavn til inverteren med Modbus/TCP aktivert. Med flere invertere bruker du leder-inverteren.",
+          "port": "Modbus/TCP-porten som er satt på inverteren. SolarEdge-standarden er 1502."
         }
       },
       "scan_complete": {
@@ -44,6 +67,11 @@
           "host": "IP-adres van omvormer",
           "port": "Modbus/TCP-poort",
           "device_list": "Inverter-enhetsliste"
+        },
+        "data_description": {
+          "host": "IP-adresse eller vertsnavn til inverteren med Modbus/TCP aktivert. Med flere invertere bruker du leder-inverteren.",
+          "port": "Modbus/TCP-porten som er satt på inverteren. SolarEdge-standarden er 1502.",
+          "device_list": "Modbus-enhets-ID-er for inverterne dine. Bruk en liste (1,3,10), et område (1-4) eller begge (1-3,5,10). En enkelt inverter bruker vanligvis 1."
         }
       }
     },
@@ -60,6 +88,7 @@
     },
     "abort": {
       "already_configured": "Vert og port er allerede konfigurert i en annen hub.",
+      "cannot_connect": "Kunne ikke koble til den oppdagede enheten.",
       "reconfigure_successful": "Omkonfigureringen var vellykket"
     },
     "progress": {
@@ -72,12 +101,23 @@
         "title": "SolarEdge Modbus-alternativer",
         "data": {
           "scan_interval": "Avstemningsfrekvens (sekunder)",
-          "keep_modbus_open": "Hold Modbus-tilkoblingen åpen",
+          "close_after_polling": "Lukk tilkoblingen etter avstemning",
           "detect_meters": "Automatisk oppdagelse av målere",
           "detect_batteries": "Automatisk gjenkjenning av batterier",
           "detect_extras": "Automatisk oppdage flere enheter",
           "advanced_power_control": "Strømkontrollalternativer",
+          "request_timeout": "Tidsavbrudd for Modbus-forespørsel (sekunder)",
           "sleep_after_write": "Inverter Command Delay (sekunder)"
+        },
+        "data_description": {
+          "scan_interval": "Hvor ofte, i sekunder, data leses fra inverterne.",
+          "close_after_polling": "Lukk Modbus/TCP-tilkoblingen etter hver vellykket avlesning. Slå på dette hvis noe annet også kobler til inverteren, fordi den bare godtar én tilkobling om gangen.",
+          "detect_meters": "Se etter målere koblet til hver inverter når integrasjonen starter.",
+          "detect_batteries": "Se etter batterier koblet til hver inverter når integrasjonen starter. Batteristøtte bruker registre som SolarEdge ikke offisielt dokumenterer.",
+          "detect_extras": "Sjekk om hver inverter støtter Global Dynamic Power Control og Advanced Power Control, og legg til entitetene deres hvis de finnes.",
+          "advanced_power_control": "Vis trinnet Alternativer for effektstyring etterpå, for å slå lagringsstyring og grensestyring for anlegget av eller på.",
+          "request_timeout": "Hvor lenge, i sekunder, det ventes på svar på hver Modbus-forespørsel.",
+          "sleep_after_write": "Sekunder å vente mellom forespørsler til en inverter etter at en kommando er skrevet til den. Noen invertere trenger tid til å behandle en kommando før de svarer igjen. 0 slår dette av."
         }
       },
       "adv_pwr_ctl": {
@@ -85,6 +125,10 @@
         "data": {
           "adv_storage_control": "Aktiver lagringskontroll",
           "adv_site_limit_control": "Aktiver Site Limit Control"
+        },
+        "data_description": {
+          "adv_storage_control": "Legg til entiteter som endrer innstillingene for batterilagringsstyring på inverteren.",
+          "adv_site_limit_control": "Legg til entiteter som endrer anleggets eksport- og produksjonsgrenser på inverteren."
         },
         "description": "Advarsel: Disse alternativene kan bryte forsyningsavtaler, endre forbruksfaktureringen, kan kreve spesialutstyr og overskrive klargjøring av SolarEdge eller installatøren. Bruk på eget ansvar! Justerbare parametere i Modbus-registre er beregnet for langtidslagring. Periodiske endringer kan skade flashminnet."
       },
@@ -94,11 +138,17 @@
           "allow_battery_energy_reset": "La batterienergien tilbakestilles",
           "battery_energy_reset_cycles": "Oppdater sykluser for å tilbakestille batterienergi",
           "battery_rating_adjust": "Justering av batterikapasitet (prosent)"
+        },
+        "data_description": {
+          "allow_battery_energy_reset": "Noen batterier rapporterer energitotaler som går ned eller nullstilles. Når av, ignoreres en lavere verdi og den siste verdien beholdes. Når på, godtas den lavere verdien.",
+          "battery_energy_reset_cycles": "Antall avlesninger på rad der en lavere batterienergiverdi må sees før den godtas. Brukes bare når Tillat nullstilling av batterienergi er slått på.",
+          "battery_rating_adjust": "Prosent over batteriets nominelle energi som tilgjengelig energi kan nå før verdien regnes som ugyldig. Bruk dette hvis batteriet ditt rapporterer mer enn den nominelle verdien."
         }
       }
     },
     "error": {
       "invalid_scan_interval": "Gyldig intervall er 1 til 86400 sekunder.",
+      "invalid_request_timeout": "Gyldig intervall er 1 til 60 sekunder.",
       "invalid_sleep_interval": "Gyldig intervall er 0 til 60 sekunder.",
       "invalid_percent": "Gyldig område er 0 til 100 prosent."
     }
@@ -114,8 +164,12 @@
             "data": {
               "host": "IP-adres van omvormer",
               "port": "Modbus/TCP-poort",
-              "device_id": "Inverter Modbus-adresse (enhets-ID)",
-              "number_of_inverters": "Antall omformere koblet sammen"
+              "device_list": "Inverter-enhetsliste"
+            },
+            "data_description": {
+              "host": "IP-adresse eller vertsnavn til inverteren med Modbus/TCP aktivert. Med flere invertere bruker du leder-inverteren.",
+              "port": "Modbus/TCP-porten som er satt på inverteren. SolarEdge-standarden er 1502.",
+              "device_list": "Modbus-enhets-ID-er for inverterne dine. Bruk en liste (1,3,10), et område (1-4) eller begge (1-3,5,10). En enkelt inverter bruker vanligvis 1."
             }
           }
         },
@@ -135,13 +189,68 @@
       "title": "Ugyldig omformer-enhets-ID",
       "description": "Omformer-enhets-ID {device_id} på {host} svarer ikke eller er ikke en gyldig SolarEdge-omformer. Den er hoppet over. Hvis enheten er byttet ut eller ID-en er endret, oppdater listen over omformer-enhets-ID-er i hub-konfigurasjonen. Kontroller ellers enheten og Modbus/TCP-tilkoblingen."
     },
+    "setup_timed_out": {
+      "title": "Tidsavbrudd under oppsett",
+      "description": "Oppsettet av huben på {host} ble ikke fullført innen {timeout} sekunder. Det ventet på enhets-ID {device_id}. Kontroller enheten og Modbus/TCP-tilkoblingen. Hvis enheten er fjernet eller ID-en er endret, oppdater listen over omformer-enhets-ID-er i hub-konfigurasjonen. Home Assistant-loggen viser hvilket trinn oppsettet ventet på."
+    },
     "detect_timeout_gpc": {
-      "title": "Global dynamisk kraftkontroll timeout",
-      "description": "Omformeren svarte ikke mens du leste data for global dynamisk kraftkontroll."
+      "title": "Global dynamisk kraftkontroll timeout (Omformer {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Global dynamisk kraftkontroll timeout",
+            "description": "Omformer-enhets-ID {device_id} på {host} svarte ikke etter flere forsøk under lesing av data for global dynamisk kraftkontroll. Disse enhetene er utilgjengelige til dette er løst.\n\nBekreft for å prøve å oppdage denne funksjonen igjen ved neste avlesning. Deaktiver alternativet for automatisk oppdagelse av flere enheter hvis omformeren har problemer med å lese disse sensorene."
+          }
+        }
+      }
     },
     "detect_timeout_apc": {
-      "title": "Avansert timeout for strømkontroll",
-      "description": "Omformeren svarte ikke mens du leste data for avanserte strømkontroller."
+      "title": "Avansert timeout for strømkontroll (Omformer {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Avansert timeout for strømkontroll",
+            "description": "Omformer-enhets-ID {device_id} på {host} svarte ikke etter flere forsøk under lesing av data for avanserte strømkontroller. Disse enhetene er utilgjengelige til dette er løst.\n\nBekreft for å prøve å oppdage denne funksjonen igjen ved neste avlesning. Deaktiver alternativet for automatisk oppdagelse av flere enheter hvis omformeren har problemer med å lese disse sensorene."
+          }
+        }
+      }
+    },
+    "deprecated_yaml_modbus": {
+      "title": "Modbus YAML-konfigurasjon støttes ikke lenger",
+      "description": "Seksjonen `modbus` under `solaredge_modbus_multi` i `configuration.yaml` støttes ikke lenger og blir ignorert. Fjern den fra YAML-konfigurasjonen din."
+    },
+    "deprecated_keep_modbus_open": {
+      "title": "Alternativet «Hold Modbus-tilkoblingen åpen» er erstattet",
+      "description": "Alternativet «Hold Modbus-tilkoblingen åpen» er erstattet av «Lukk tilkoblingen etter avstemning» i konfigurasjonen til denne integrasjonen. Se på det nye alternativet hvis du trenger samme oppførsel."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "inverter_status": {
+        "state": {
+          "I_STATUS_OFF": "Av",
+          "I_STATUS_SLEEPING": "Hvilemodus (automatisk avslåing)",
+          "I_STATUS_STARTING": "Nettovervåking",
+          "I_STATUS_MPPT": "Produksjon",
+          "I_STATUS_THROTTLED": "Produksjon (begrenset)",
+          "I_STATUS_SHUTTING_DOWN": "Slår av",
+          "I_STATUS_FAULT": "Feil",
+          "I_STATUS_STANDBY": "Vedlikehold"
+        }
+      },
+      "battery_status": {
+        "state": {
+          "B_STATUS_OFF": "Av",
+          "B_STATUS_STANDBY": "Hvilemodus",
+          "B_STATUS_INIT": "Initialiserer",
+          "B_STATUS_CHARGE": "Lader",
+          "B_STATUS_DISCHARGE": "Utlader",
+          "B_STATUS_FAULT": "Feil",
+          "B_STATUS_PRESERVE_CHARGE": "Bevarer ladning",
+          "B_STATUS_IDLE": "Inaktiv",
+          "B_STATUS_POWER_SAVING": "Strømsparing"
+        }
+      }
     }
   }
 }

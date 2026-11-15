@@ -14,13 +14,31 @@
           "manual_list": "Manually enter a list of inverter Device IDs"
         }
       },
+      "zeroconf_confirm": {
+        "title": "Discovered SolarEdge Inverter",
+        "description": "A SolarEdge Modbus/TCP gateway was found at {host}:{port}. Set it up now?",
+        "data": {
+          "name": "Sensor Prefix"
+        },
+        "data_description": {
+          "name": "Added to the start of each device name, followed by the device, such as I1 for inverter 1. Entity IDs are created from these names."
+        }
+      },
       "manual": {
         "title": "Manual Modbus Configuration",
         "data": {
           "name": "Sensor Prefix",
           "host": "Inverter IP Address",
           "port": "Modbus/TCP Port",
-          "device_list": "Inverter Device ID List"
+          "device_list": "Inverter Device ID List",
+          "bypass_device_check": "Skip Device ID validation"
+        },
+        "data_description": {
+          "name": "Added to the start of each device name, followed by the device, such as I1 for inverter 1. Entity IDs are created from these names.",
+          "host": "IP address or hostname of the inverter with Modbus/TCP enabled. With multiple inverters, use the leader inverter.",
+          "port": "Modbus/TCP port set on the inverter. The SolarEdge default is 1502.",
+          "device_list": "Modbus Device IDs of your inverters. Use a list (1,3,10), a range (1-4), or both (1-3,5,10). A single inverter normally uses 1.",
+          "bypass_device_check": "Add the Device ID list without connecting to check that each ID responds as a SolarEdge inverter. Use this only if the check fails for a device you know is correct, such as one that is offline during setup."
         }
       },
       "scan_ask_host": {
@@ -29,6 +47,11 @@
           "name": "Sensor Prefix",
           "host": "Inverter IP Address",
           "port": "Modbus/TCP Port"
+        },
+        "data_description": {
+          "name": "Added to the start of each device name, followed by the device, such as I1 for inverter 1. Entity IDs are created from these names.",
+          "host": "IP address or hostname of the inverter with Modbus/TCP enabled. With multiple inverters, use the leader inverter.",
+          "port": "Modbus/TCP port set on the inverter. The SolarEdge default is 1502."
         }
       },
       "scan_complete": {
@@ -44,6 +67,11 @@
           "host": "Inverter IP Address",
           "port": "Modbus/TCP Port",
           "device_list": "Inverter Device ID List"
+        },
+        "data_description": {
+          "host": "IP address or hostname of the inverter with Modbus/TCP enabled. With multiple inverters, use the leader inverter.",
+          "port": "Modbus/TCP port set on the inverter. The SolarEdge default is 1502.",
+          "device_list": "Modbus Device IDs of your inverters. Use a list (1,3,10), a range (1-4), or both (1-3,5,10). A single inverter normally uses 1."
         }
       }
     },
@@ -60,6 +88,7 @@
     },
     "abort": {
       "already_configured": "Host and port is already configured in another hub.",
+      "cannot_connect": "Could not connect to the discovered device.",
       "reconfigure_successful": "Re-configuration was successful"
     },
     "progress": {
@@ -72,12 +101,23 @@
         "title": "SolarEdge Modbus Options",
         "data": {
           "scan_interval": "Polling Frequency (seconds)",
-          "keep_modbus_open": "Keep Modbus Connection Open",
+          "close_after_polling": "Close Connection After Polling",
           "detect_meters": "Auto-Detect Meters",
           "detect_batteries": "Auto-Detect Batteries",
           "detect_extras": "Auto-Detect Additional Entities",
           "advanced_power_control": "Power Control Options",
+          "request_timeout": "Modbus Request Timeout (seconds)",
           "sleep_after_write": "Inverter Command Delay (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "How often, in seconds, to read data from the inverters.",
+          "close_after_polling": "Close the Modbus/TCP connection after each successful poll. Enable this if something else also connects to the inverter, because it accepts only one connection at a time.",
+          "detect_meters": "Look for meters connected to each inverter when the integration starts.",
+          "detect_batteries": "Look for batteries connected to each inverter when the integration starts. Battery support uses registers that SolarEdge does not officially document.",
+          "detect_extras": "Check whether each inverter supports Global Dynamic Power Control and Advanced Power Control, and add their entities when found.",
+          "advanced_power_control": "Show the Power Control Options step next, to turn storage control and site limit control on or off.",
+          "request_timeout": "How long, in seconds, to wait for a reply to each Modbus request.",
+          "sleep_after_write": "Seconds to wait between requests to an inverter after a command is written to it. Some inverters need time to process a command before they reply again. 0 turns this off."
         }
       },
       "adv_pwr_ctl": {
@@ -85,6 +125,10 @@
         "data": {
           "adv_storage_control": "Enable Storage Control",
           "adv_site_limit_control": "Enable Site Limit Control"
+        },
+        "data_description": {
+          "adv_storage_control": "Add entities that change battery storage control settings on the inverter.",
+          "adv_site_limit_control": "Add entities that change the site export and production limit settings on the inverter."
         },
         "description": "Warning: These options can violate utility agreements, alter your utility billing, may require special equipment, and overwrite provisioning by SolarEdge or your installer. Use at your own risk! Adjustable parameters in Modbus registers are intended for long-term storage. Periodic changes may damage the flash memory."
       },
@@ -94,11 +138,17 @@
           "allow_battery_energy_reset": "Allow Battery Energy to Reset",
           "battery_energy_reset_cycles": "Update Cycles to Reset Battery Energy",
           "battery_rating_adjust": "Battery Rating Adjustment (percent)"
+        },
+        "data_description": {
+          "allow_battery_energy_reset": "Some batteries report energy totals that go down or reset to zero. When off, a lower value is ignored and the last value is kept. When on, the lower value is accepted.",
+          "battery_energy_reset_cycles": "Number of polls in a row that a lower battery energy value must be seen before it is accepted. Only used when Allow Battery Energy to Reset is on.",
+          "battery_rating_adjust": "Percent above the battery's rated energy that its available energy may reach before the value is treated as invalid. Use this if your battery reports more than its rating."
         }
       }
     },
     "error": {
       "invalid_scan_interval": "Valid interval is 1 to 86400 seconds.",
+      "invalid_request_timeout": "Valid interval is 1 to 60 seconds.",
       "invalid_sleep_interval": "Valid interval is 0 to 60 seconds.",
       "invalid_percent": "Valid range is 0 to 100 percent."
     }
@@ -115,6 +165,11 @@
               "host": "Inverter IP Address",
               "port": "Modbus/TCP Port",
               "device_list": "Inverter Device ID List"
+            },
+            "data_description": {
+              "host": "IP address or hostname of the inverter with Modbus/TCP enabled. With multiple inverters, use the leader inverter.",
+              "port": "Modbus/TCP port set on the inverter. The SolarEdge default is 1502.",
+              "device_list": "Modbus Device IDs of your inverters. Use a list (1,3,10), a range (1-4), or both (1-3,5,10). A single inverter normally uses 1."
             }
           }
         },
@@ -134,13 +189,68 @@
       "title": "Invalid Inverter Device ID",
       "description": "Inverter Device ID {device_id} at {host} is not responding or is not a valid SolarEdge inverter. It has been skipped. If the device was replaced or its ID changed, update the Inverter Device ID List in the hub configuration. Otherwise check the device and Modbus/TCP connection."
     },
+    "setup_timed_out": {
+      "title": "Setup Timed Out",
+      "description": "Setup of the hub at {host} did not finish within {timeout} seconds. It was waiting on Device ID {device_id}. Check the device and Modbus/TCP connection. If the device was removed or its ID changed, update the Inverter Device ID List in the hub configuration. The Home Assistant log shows which step setup was waiting on."
+    },
     "detect_timeout_gpc": {
-      "title": "Global Dynamic Power Control Timeout",
-      "description": "The inverter did not respond while reading data for Global Dynamic Power Controls. These entities will be unavailable. Disable the Auto-Detect Additional Entities option if the inverter has trouble trying to read these sensors."
+      "title": "Global Dynamic Power Control Timeout (Inverter {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Global Dynamic Power Control Timeout",
+            "description": "Inverter Device ID {device_id} at {host} did not respond while reading data for Global Dynamic Power Controls after several attempts. These entities are unavailable until this is resolved.\n\nConfirm to try detecting this feature again on the next poll. Disable the Auto-Detect Additional Entities option if the inverter has trouble trying to read these sensors."
+          }
+        }
+      }
     },
     "detect_timeout_apc": {
-      "title": "Advanced Power Control Timeout",
-      "description": "The inverter did not respond while reading data for Advanced Power Controls. These entities will be unavailable. Disable the Auto-Detect Additional Entities option if the inverter has trouble trying to read these sensors."
+      "title": "Advanced Power Control Timeout (Inverter {device_id})",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Advanced Power Control Timeout",
+            "description": "Inverter Device ID {device_id} at {host} did not respond while reading data for Advanced Power Controls after several attempts. These entities are unavailable until this is resolved.\n\nConfirm to try detecting this feature again on the next poll. Disable the Auto-Detect Additional Entities option if the inverter has trouble trying to read these sensors."
+          }
+        }
+      }
+    },
+    "deprecated_yaml_modbus": {
+      "title": "Modbus YAML Configuration No Longer Supported",
+      "description": "The `modbus` section under `solaredge_modbus_multi` in `configuration.yaml` is no longer supported and is being ignored. Please remove it from your YAML configuration."
+    },
+    "deprecated_keep_modbus_open": {
+      "title": "Keep Modbus Connection Open Option Replaced",
+      "description": "The \"Keep Modbus Connection Open\" option has been replaced by \"Close Connection After Polling\" in this integration's configuration. Review the new option if you need the same behavior."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "inverter_status": {
+        "state": {
+          "I_STATUS_OFF": "Off",
+          "I_STATUS_SLEEPING": "Sleeping (Auto-Shutdown)",
+          "I_STATUS_STARTING": "Grid Monitoring",
+          "I_STATUS_MPPT": "Production",
+          "I_STATUS_THROTTLED": "Production (Curtailed)",
+          "I_STATUS_SHUTTING_DOWN": "Shutting Down",
+          "I_STATUS_FAULT": "Fault",
+          "I_STATUS_STANDBY": "Maintenance"
+        }
+      },
+      "battery_status": {
+        "state": {
+          "B_STATUS_OFF": "Off",
+          "B_STATUS_STANDBY": "Standby",
+          "B_STATUS_INIT": "Initializing",
+          "B_STATUS_CHARGE": "Charge",
+          "B_STATUS_DISCHARGE": "Discharge",
+          "B_STATUS_FAULT": "Fault",
+          "B_STATUS_PRESERVE_CHARGE": "Preserve Charge",
+          "B_STATUS_IDLE": "Idle",
+          "B_STATUS_POWER_SAVING": "Power Saving"
+        }
+      }
     }
   }
 }
